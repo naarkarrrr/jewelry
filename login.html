@@ -97,7 +97,7 @@
                 <!-- social-networks of the page -->
                 <ul class="list-unstyled icon-list">
                   <li>
-                    <a href="#"><img src="images/user.png" alt="images description"></a>
+                    <a href="register.html"><img src="images/user.png" alt="images description"></a>
                   </li>
                   <li class="cart-box hidden-xs">
                     <a class="cart-opener opener-icons" href="#">
@@ -167,8 +167,9 @@
     <!-- contain main informative part of the site -->
     <main id="main" role="main">
       <!-- main-banner of the page -->
-      <section class="banner" style="background-image: url(http://placehold.it/1920x1000);">
-        <span class="sale-percent">SALE OF 50%</span>
+      <!-- <section class="banner" style="background-image: url(http://placehold.it/1920x1000);"> -->
+        <section class="banner" style="background-image: url(images/1920category.jpg);">
+          <span class="sale-percent">SALE OF 50%</span>
         <div class="container">
           <div class="row">
             <div class="col-xs-12">
@@ -190,14 +191,15 @@
         <form action="#" class="contact-form">
           <fieldset>
             <div class="form-group">
-              <input type="email" class="form-control" placeholder="Email">
+              <input type="email" class="form-control" placeholder="Email" required>
             </div>
             <div class="form-group">
-              <input type="password" class="form-control" placeholder="Password">
+              <input type="password" class="form-control" placeholder="Password" required>
             </div>
             <div class="form-group">
-              <a href="#">Forget Password</a>
-              <button class="btn-primary btn-login" type="submit">Login</button>
+              <a href="register.html">New to Ringico?</a>
+              <a href="#" style="margin-left: 150px;">Forgot Password</a>
+              <button class="btn-primary btn-login" type="submit" style="margin-top: 10px;">Login</button>
             </div>
           </fieldset>
         </form>
