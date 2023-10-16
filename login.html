@@ -187,11 +187,29 @@
         <span class="year">TRENDS OF THE YEAR</span>
       </section>
       <!-- form-section of the page -->
-      <section class="form-sec">
+       <section class="form-sec">
+        <form action="#" class="contact-form" id="login-form">
+            <fieldset>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Registered Phone Number" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <a href="register.html">New to kaafi?</a>
+                    <a href="#" style="margin-left: 150px;">Forgot Password</a>
+                    <button class="btn-primary btn-login" type="submit" style="margin-top: 10px" id="login-button" disabled>Login</button>
+                    <div class="loader" id="loader"></div>
+                </div>
+            </fieldset>
+        </form>
+    </section>
+      <!-- <section class="form-sec">
         <form action="#" class="contact-form">
           <fieldset>
             <div class="form-group">
-              <input type="email" class="form-control" placeholder="Email" required>
+              <input type="text" class="form-control" placeholder="Registerde Phone Number" required>
             </div>
             <div class="form-group">
               <input type="password" class="form-control" placeholder="Password" required>
@@ -203,7 +221,7 @@
             </div>
           </fieldset>
         </form>
-      </section>
+      </section> -->
     </main>
     <!-- footer of the Page -->
     <footer id="footer" class="wow fadeInUp" data-wow-delay="0.4s">
@@ -247,6 +265,53 @@
     <!-- Back Top of the page -->
     <span id="back-top" class="arrow_carrot-up"></span>
   </div>
+  
+  <script>
+    const loginForm = document.getElementById('login-form');
+    const loginButton = document.getElementById('login-button');
+    const loader = document.getElementById('loader');
+
+    function toggleButtonState() {
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value.trim();
+        loginButton.disabled = !(phone && password);
+    }
+
+    loginForm.addEventListener('input', toggleButtonState);
+
+    loginForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        loginButton.disabled = true;
+        loader.style.display = 'inline-block';
+
+        try {
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            // Make a POST request to your login endpoint
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone, password }),
+            });
+
+            if (response.ok) {
+                alert('Login successful');
+                // Handle successful login, e.g., redirect to a dashboard
+            } else {
+                const errorData = await response.json();
+                console.log('Login failed:', errorData);
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        } finally {
+            loginButton.disabled = false;
+            loader.style.display = 'none';
+        }
+    });
+</script>
   <!-- include jQuery -->
   <script src="js/jquery-1.11.3.min.js"></script>
   <!-- include jQuery -->
