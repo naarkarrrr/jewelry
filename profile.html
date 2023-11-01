@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/custom-styles.css">
+</head>
+<body>
+    <h1>User Profile</h1>
+    <a href="demo-cart.html">cart item</a>
+    <a href="listing.html">listing</a>
+<hr>
+    <div id="profile-container">
+        <div id="user-info">
+            <h2>Name: <span id="user-name"></span></h2>
+            <p>Email-: <span id="user-email"></span></p>
+            <div id="profile-picture">
+                <img id="user-avatar" src="" alt="Profile Picture">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch and display user profile
+        async function fetchUserProfile() {
+            const accessToken = localStorage.getItem('access_token');
+
+            // Replace 'http://localhost:5000' with the URL of your user profile endpoint
+            const profileUrl = 'http://localhost:5000/api/users/profile';
+
+            try {
+                const response = await fetch(profileUrl, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const userData = await response.json();
+                displayUserProfile(userData);
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+            }
+        }
+
+        function displayUserProfile(userData) {
+            const userName = document.getElementById('user-name');
+            const userEmail = document.getElementById('user-email');
+            const userAvatar = document.getElementById('user-avatar');
+
+            userName.textContent = userData.name;
+            userEmail.textContent = userData.email;
+            userAvatar.src = userData.avatar;
+        }
+
+        // Call the function to fetch and display the user profile
+        fetchUserProfile();
+    </script>
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+</head>
+<body>
+    <h1>Welcome, <span id="username"></span></h1>
+    <img id="profile-picture" src="" alt="Profile Picture">
+    <p>Email: <span id="email"></span></p>
+
+    
+    <script src="/js/profile..js"></script>
+</body>
+</html> -->

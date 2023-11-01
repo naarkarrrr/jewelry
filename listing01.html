@@ -10,6 +10,7 @@
   <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:700' rel='stylesheet' type='text/css'>
   <!-- include the site stylesheet -->
+  
   <link rel="stylesheet" href="css/bootstrap.css">
   <!-- include the site stylesheet -->
   <link rel="stylesheet" href="css/fonts.css">
@@ -31,7 +32,95 @@
     <link rel="stylesheet" href="assets/css/vendors/jquery.nstSlider.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- endinject -->
+<style>
 
+/* Product Card Container */
+.tm-product-card {
+  width: 100%;
+  max-width: 300px; /* Adjust the width as needed */
+  border: 1px solid #e1e1e1;
+  margin: 10px;
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(20, 20, 20, 0);
+  background-color: #fff;
+}
+
+
+
+
+/* Product Image */
+.tm-product-images img {
+ height: 600px;
+ width: 510px;
+ border: #e1e1e1 solid;
+}
+
+/* Product Title */
+.tm-product-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+/* Product Rating */
+.tm-ratingbox {
+  color: #FFD700; /* Yellow color for stars */
+  font-size: 20px;
+}
+
+/* Product Price */
+.tm-product-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #FF5722; /* Change the color as needed */
+}
+
+/* Product Description */
+.tm-product-content p {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+/* Product Action Buttons */
+.tm-product-actions {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tm-product-actions li {
+  margin-right: 10px;
+}
+
+/* Product Badges */
+.tm-product-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.tm-product-badges span {
+  padding: 5px;
+  margin-right: 5px;
+  border-radius: 5px;
+  background-color: #FF5722; /* Change the badge background color */
+  color: #fff; /* Change the text color */
+  font-weight: bold;
+}
+
+.tm-product-badges-new {
+  background-color: #4CAF50; /* New badge color */
+}
+
+.tm-product-badges-sale {
+  background-color: #FF5722; /* Sale badge color */
+}
+
+
+
+</style>
 
 </head>
 <body>
@@ -98,10 +187,7 @@
                   </li>
                   <li>
                     <a href="blog.html">blog</a>
-                    <!-- <ul class="list-unstyled drop">
-                      <li><a href="blog.html">Blog</a></li>
-                      <li><a href="blog-detail.html">Single Post</a></li>
-                    </ul> -->
+                
                   </li>
                   <li><a href="about-us.html">about</a></li>
                   <li><a href="contact-us.html">Contact</a></li>
@@ -152,9 +238,7 @@
                       </div>
                     </div>
                   </li>
-                  <li>
-                    <a class="btn-search" href="#"><i class="icon-search"></i></a>
-                  </li>
+                 
                 </ul>
               </div>
             </div>
@@ -163,25 +247,11 @@
       </div>
     </header>
     <!-- Search Popup of the page -->
-    <div class="search-popup">
-      <div class="holder">
-        <div class="col">
-          <div class="block-holder">
-            <a href="#" class="close-btn"><i class="icon-close"></i></a>
-            <form action="#" class="submit-form">
-              <fieldset>
-                <label for="search" class="icon-search"></label>
-                <input type="search" id="search">
-              </fieldset>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
+   
     <!-- contain main informative part of the site -->
       <main id="main" role="main">
           <section class="banner" style="background-image: url(images/1920category.jpg);">
-            <span class="sale-percent">SALE OF 50%</span>
+            <span class="sale-percent">Best For You</span>
           <div class="container">
             <div class="row">
               <div class="col-xs-12">
@@ -206,84 +276,12 @@
                           <div class="row">
       
                               <div class="col-lg-9 col-12">
-                                  <form action="#" class="tm-shop-header">
-                                      <div class="tm-shop-productview">
-                                          <span>View:</span>
-                                          <button data-view="grid" class="active"><i class="ion-android-apps"></i></button>
-                                          <button data-view="list"><i class="ion-android-menu"></i></button>
-                                      </div>
-                                      <p class="tm-shop-countview">Showing 1 to 9 of 16 </p>
-                                      <select>
-                                          <option value="value">Default Sorting</option>
-                                          <option value="value">Name A-Z</option>
-                                          <option value="value">Date</option>
-                                          <option value="value">Best Sellers</option>
-                                          <option value="value">Trending</option>
-                                      </select>
-                                  </form>
+                                
       
                                   <div class="tm-shop-products">
                                       <div class="row mt-30-reverse">
       
-                                          <!-- Single Product -->
-                                          <!-- <div class="col-xl-4 col-lg-6 col-md-6 col-sm-6 col-12 mt-50" id="card">
-                                              <div class="tm-product tm-scrollanim">
-                                                  <div class="tm-product-topside">
-                                                      <div class="tm-product-images">
-                                                          <img src="images/products/product-image-1.jpg"
-                                                              alt="product image">
-                                                          <img src="images/products/product-image-2.jpg"
-                                                              alt="product image">
-                                                      </div>
-                                                      <ul class="tm-product-actions">
-                                                          <li><a href="#"><i class="ion-android-cart"></i> Add to cart</a>
-                                                          </li>
-                                                          <li><button data-fancybox data-src="#tm-product-quickview"><i
-                                                                      class="ion-eye"></i></button></li>
-                                                          <li><a href="#"><i class="ion-heart"></i></a></li>
-                                                      </ul>
-                                                      <div class="tm-product-badges">
-                                                          <span class="tm-product-badges-new">New</span>
-                                                          <span class="tm-product-badges-sale">Sale</span>
-                                                      </div>
-                                                  </div>
-                                                  <div class="tm-product-bottomside">
-                                                      <h6 class="tm-product-title"><a href="product-details.html">Charm</a></h6>
-                                                      <div class="tm-ratingbox">
-                                                          <span class="is-active"><i
-                                                                  class="ion-android-star-outline"></i></span>
-                                                          <span class="is-active"><i
-                                                                  class="ion-android-star-outline"></i></span>
-                                                          <span class="is-active"><i
-                                                                  class="ion-android-star-outline"></i></span>
-                                                          <span class="is-active"><i
-                                                                  class="ion-android-star-outline"></i></span>
-                                                          <span><i class="ion-android-star-outline"></i></span>
-                                                      </div>
-                                                      <span class="tm-product-price">$29.99</span>
-                                                      <div class="tm-product-content">
-                                                          <p>Lorem Ipsum is simply dummy text of the printing and typesetting
-                                                              industry.
-                                                              Lorem
-                                                              Ipsum has been the industry's standard dummy text ever since the
-                                                              when an unknown printer took a galley of type and scrambled it
-                                                              to make a
-                                                              type specimen book. It has survived not only five centuries, but
-                                                              also the
-                                                              leap into electronic typesetting.</p>
-                                                          <ul class="tm-product-actions">
-                                                              <li><a href="#"><i class="ion-android-cart"></i> Add to cart</a>
-                                                              </li>
-                                                              <li><button data-fancybox data-src="#tm-product-quickview"><i
-                                                                          class="ion-eye"></i></button></li>
-                                                              <li><a href="#"><i class="ion-heart"></i></a></li>
-                                                          </ul>
-                                                      </div>
-                                                  </div>
-                                              </div>
-                                          </div> -->
-                                          <!--// Single Product -->
-      <h1>display discription categiri and all info in cardd</h1>
+                                         
                                           <div class="row" id="product-list">
                                             <!-- Product cards will be dynamically added here -->
                                           </div>
@@ -311,40 +309,39 @@
                               <div class="col-lg-3 col-12">
                                   <div class="widgets">
       
-                                      <!-- Single Widget -->
-                                      <div class="single-widget widget-categories">
-                                          <h6 class="widget-title">Categories</h6>
-                                          <ul>
-                                              <li><a href="#">All</a></li>
-                                              <li><a href="#" data-filter=".rings">Rings</a></li>
-                                              <li><a href="#" data-filter=".rings">Pendants</a></li>
-                                              <li><a href="#" data-filter=".rings">Charms</a></li>
-                                              <li><a href="#" data-filter=".rings">Necklaces</a></li>
-                                              <li><a href="#" data-filter=".rings">Men's</a></li>
-                                          </ul>
-                                      </div>
-                                      <!--// Single Widget -->
-      
-                                      <!-- Single Widget -->
-                                      <div class="single-widget widget-pricefilter">
-                                          <h6 class="widget-title">Filter by Price</h6>
-                                          <div class="widget-pricefilter-inner">
-                                              <div class="tm-rangeslider" data-range_min="0" data-range_max="800"
-                                                  data-cur_min="200" data-cur_max="550">
-                                                  <div class="tm-rangeslider-bar nst-animating"></div>
-                                                  <span class="tm-rangeslider-leftgrip nst-animating" tabindex="0"></span>
-                                                  <span class="tm-rangeslider-rightgrip nst-animating" tabindex="0"></span>
-                                              </div>
-                                              <div class="widget-pricefilter-actions">
-                                                  <p class="widget-pricefilter-price">Price: $<span
-                                                          class="tm-rangeslider-leftlabel">308</span>
-                                                      - $<span class="tm-rangeslider-rightlabel">798</span></p>
-                                                  <button class="widget-pricefilter-button">Filter</button>
-                                              </div>
-                                          </div>
-                                      </div>
-                                      <!--// Single Widget -->
-      
+
+                                  
+<!-- Categories Widget -->
+<div id="category-widget" class="single-widget widget-categories">
+  <h6 class="widget-title">Categories</h6>
+  <ul id="category-list">
+    <!-- Categories will be dynamically added here -->
+  </ul>
+</div>
+
+
+
+<!-- Price Filter Widget -->
+
+<!-- Price Filter Dropdown -->
+<select id="price-filter-select">
+  <option value="0-100">&#x20B9;0 - &#x20B9;100</option>
+  <option value="101-200">&#x20B9;101 - &#x20B9;200</option>
+  <option value="201-300">&#x20B9;201 - &#x20B9;300</option>
+  <!-- Add more options for different price ranges -->
+</select>
+<button id="filter-button">Filter</button>
+
+<!-- <div id="price-filter-widget" class="single-widget widget-pricefilter">
+  <h6 class="widget-title">Filter by Price</h6>
+  <div class="widget-pricefilter-inner">
+    <input type="range" id="price-slider" min="0" max="800" step="1" value="0">
+    <p class="widget-pricefilter-price">Price: &#x20B9;<span id="min-price-label">0</span> - &#x20B9;<span id="max-price-label">800</span></p>
+    <button class="widget-pricefilter-button">Filter</button>
+  </div>
+</div> -->
+
+
                                    
       
                                   </div>
@@ -402,42 +399,204 @@
     <span id="back-top" class="arrow_carrot-up"></span>
   </div>
 
-  <script>
-    fetch('http://localhost:5000/api/products/all')
-      .then(response => response.json())
-      .then(products => {
-        const productList = document.getElementById('product-list');
-    
-        products.forEach(product => {
-          const productCard = document.createElement('div');
-          productCard.classList.add('col-xl-4', 'col-lg-6', 'col-md-6', 'col-sm-6', 'col-12', 'mt-50');
-    
-          productCard.innerHTML = `
-            <div class="tm-product tm-scrollanim">
-              <div class="tm-product-topside">
-                <div class="tm-product-images">
-                  <img src="${product.imageURL}" alt="product image">
-                </div>
-                <!-- Other product details go here -->
-              </div>
-              <div class="tm-product-bottomside">
-                <h6 class="tm-product-title">${product.title}</h6>
-                <h6 class="tm-product-title">${product. desc}</h6>
-                <h6 class="tm-product-title">${product.categories}</h6>
-                <h6 class="tm-product-title">${product.size}</h6>
-                <h6 class="tm-product-title">${product.color}</h6>
-                <h6 class="tm-product-title">${product.inStock}</h6>
-                <h6 class="tm-product-title">${product.img}</h6>
-                <!-- Other product details go here    -->
-              </div>
-            </div>
-          `;
-    
-          productList.appendChild(productCard);
-        });
-      })
-      .catch(error => console.error('Error fetching products:', error));
-    </script>
+ 
+
+
+
+<script>
+ 
+// Define a variable for products at a broader scope
+let products = [];
+
+// Function to create a product card
+function createProductCard(product) {
+  const productCard = document.createElement('div');
+  productCard.classList.add('tm-product', 'tm-scrollanim', 'col-xl-4', 'col-lg-6', 'col-md-6', 'col-sm-6', 'col-12', 'mt-50');
+
+  productCard.innerHTML = `
+    <div class="tm-product-topside">
+      <div class="tm-product-images img-p">
+        <img src="${product.img}" alt="product image">
+      </div>
+      <ul class="tm-product-actions">
+        <li><a href="#"><i class="ion-android-cart"></i> Add to cart</a></li>
+        <li><button data-fancybox data-src="#tm-product-quickview"><i class="ion-eye"></i></button></li>
+        <li><a href="#"><i class="ion-heart"></i></a></li>
+      </ul>
+    </div>
+    <div class="tm-product-bottomside">
+      <h6 class="tm-product-title">${product.title}</h6>
+      <span class="tm-product-price">&#x20B9;${product.price.toFixed(2)}</span>
+      <div class="tm-product-content">
+        <p>${product.desc}</p>
+        <ul class="tm-product-actions">
+          <li><a href="#"><i class="ion-android-cart"></i> Add to cart</a></li>
+          <li><button data-fancybox data-src="#tm-product-quickview"><i class="ion-eye"></i></button></li>
+          <li><a href="#"><i class="ion-heart"></i></a></li>
+        </ul>
+      </div>
+    </div>
+  `;
+
+  return productCard;
+}
+
+// Function to filter products by price
+function filterProductsByPrice(minPrice, maxPrice) {
+  return products.filter(product => product.price >= minPrice && product.price <= maxPrice);
+}
+
+// Make an API request to fetch products and define the variable
+fetch('http://localhost:5000/api/products/all')
+  .then(response => response.json())
+  .then(data => {
+    products = data; // Assign the fetched products to the variable
+    displayProducts(products);
+  })
+  .catch(error => {
+    console.error('Error fetching products:', error);
+  });
+
+// Define an event handler for the "Filter" button
+document.body.addEventListener('click', (event) => {
+  if (event.target.classList.contains('widget-pricefilter-button')) {
+    const priceMin = parseFloat(document.querySelector('.tm-rangeslider-leftlabel').textContent);
+    const priceMax = parseFloat(document.querySelector('.tm-rangeslider-rightlabel').textContent);
+    const filteredProducts = filterProductsByPrice(priceMin, priceMax);
+
+    // Clear the current product list
+    const productList = document.getElementById('product-list');
+    productList.innerHTML = '';
+
+    // Append filtered products to the product list
+    filteredProducts.forEach(product => {
+      productList.appendChild(createProductCard(product));
+    });
+  }
+});
+
+
+  </script>
+
+<!-- <script>
+  const categories = ["Men's", "Women's","Rings", "Pendants", "Charms", "Necklaces"];
+
+  function populateCategoryList() {
+    const categoryList = document.getElementById("category-list");
+  
+    // Clear the existing content of the category list
+    categoryList.innerHTML = '';
+  
+    // Loop through the categories and create list items
+    categories.forEach((category) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = category;
+      categoryList.appendChild(listItem);
+    }); // Add the closing parenthesis here
+  }
+
+  // Call the function to populate the category list
+  populateCategoryList();
+</script> -->
+
+<script>
+const categories = ["Men's", "Women's", "Rings", "Pendants", "Charms", "Necklaces"];
+
+function populateCategoryList() {
+  const categoryList = document.getElementById("category-list");
+  categoryList.innerHTML = '';
+
+  categories.forEach((category) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = category;
+    categoryList.appendChild(listItem);
+  });
+}
+
+// Call the function to populate the category list
+populateCategoryList();
+
+
+</script>
+
+
+
+<script>
+
+// Event listener for the filter button
+const filterButton = document.getElementById('filter-button');
+const priceFilterSelect = document.getElementById('price-filter-select');
+
+filterButton.addEventListener('click', () => {
+  // Get the selected price range
+  const selectedPriceRange = priceFilterSelect.value;
+  
+  // Split the selected range into min and max prices
+  const [minPrice, maxPrice] = selectedPriceRange.split('-').map(parseFloat);
+
+  // Call the filterProductsByPrice function with the selected price range
+  filterProductsByPrice(minPrice, maxPrice);
+});
+
+
+</script>
+
+<!-- <script>
+// Function to fetch products from the server
+function fetchProducts() {
+  // Make an API request to your server to fetch product data
+  fetch('http://localhost:5000/api/products/all')
+    .then(response => response.json())
+    .then(products => {
+      // Store the fetched products in a variable
+      displayProducts(products);
+    })
+    .catch(error => {
+      console.error('Error fetching products:', error);
+    });
+}
+
+// Function to display products
+function displayProducts(products) {
+  const productList = document.getElementById('product-list');
+  productList.innerHTML = ''; // Clear the existing product list
+
+  products.forEach(product => {
+    // Create product card and add it to the product list
+    const productCard = createProductCard(product);
+    productList.appendChild(productCard);
+  });
+}
+
+// Function to filter products based on price range
+function filterProductsByPrice(minPrice, maxPrice) {
+  // Fetch the selected price range and filter products
+  fetch('http://localhost:5000/api/products/all/filter?minPrice=' + minPrice + '&maxPrice=' + maxPrice)
+    .then(response => response.json())
+    .then(products => {
+      // Update the displayed products with the filtered products
+      displayProducts(products);
+    })
+    .catch(error => {
+      console.error('Error filtering products:', error);
+    });
+}
+
+// Initialize the page by fetching and displaying all products
+fetchProducts();
+let currentMinPrice = 0;
+// Add an event listener to the price filter button
+const filterButton = document.querySelector('.widget-pricefilter-button');
+filterButton.addEventListener('click', () => {
+  const minPrice = currentMinPrice; // Get the selected min price from the slider
+  const maxPrice = currentMaxPrice; // Get the selected max price from the slider
+  filterProductsByPrice(minPrice, maxPrice);
+});
+</script> -->
+
+
+
+ 
 
   <!-- include jQuery -->
   <script src="js/jquery-1.11.3.min.js"></script>
@@ -447,6 +606,8 @@
   <script src="js/jquery.main.js"></script>
 
       <!-- inject:js -->
+      <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
       <script src="assets/js/vendors/modernizr-3.7.1.min.js"></script>
       <script src="assets/js/vendors/jquery-3.3.1.min.js"></script>
       <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>

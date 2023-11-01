@@ -176,7 +176,7 @@
                 <div class="caption">
                   <h1 class="main-heading heading-1">Login</h1>
                   <ul class="list-unstyled breadcrumbs">
-                    <li><a href="home.html">Home</a></li>
+                    <li><a href="listing.html">Home</a></li>
                     <li><a href="category-page.html">shop</a></li>
                     <li>login</li>
                   </ul>
@@ -205,23 +205,7 @@
             </fieldset>
         </form>
     </section>
-      <!-- <section class="form-sec">
-        <form action="#" class="contact-form">
-          <fieldset>
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Registerde Phone Number" required>
-            </div>
-            <div class="form-group">
-              <input type="password" class="form-control" placeholder="Password" required>
-            </div>
-            <div class="form-group">
-              <a href="register.html">New to kaafi?</a>
-              <a href="#" style="margin-left: 150px;">Forgot Password</a>
-              <button class="btn-primary btn-login" type="submit" style="margin-top: 10px;">Login</button>
-            </div>
-          </fieldset>
-        </form>
-      </section> -->
+    
     </main>
     <!-- footer of the Page -->
     <footer id="footer" class="wow fadeInUp" data-wow-delay="0.4s">
@@ -265,7 +249,8 @@
     <!-- Back Top of the page -->
     <span id="back-top" class="arrow_carrot-up"></span>
   </div>
-  
+
+
   <script>
     const loginForm = document.getElementById('login-form');
     const loginButton = document.getElementById('login-button');
@@ -298,8 +283,14 @@
             });
 
             if (response.ok) {
+                const data = await response.json();
+
+                // Store the access token in localStorage
+                localStorage.setItem('access_token', data.accessToken);
+
                 alert('Login successful');
                 // Handle successful login, e.g., redirect to a dashboard
+                window.location.href = '/profile.html';
             } else {
                 const errorData = await response.json();
                 console.log('Login failed:', errorData);
@@ -312,7 +303,10 @@
         }
     });
 </script>
-  <!-- include jQuery -->
+
+
+
+
   <script src="js/jquery-1.11.3.min.js"></script>
   <!-- include jQuery -->
   <script src="js/plugins.js"></script>
