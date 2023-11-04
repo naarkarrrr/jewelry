@@ -9,8 +9,7 @@
 </head>
 <body>
     <h1>User Cart</h1>
-    
-product is deknA Hai 
+
     <div id="cart-items" class="product-container"></div>
 
     <style>
@@ -28,6 +27,37 @@ product is deknA Hai
     </style>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const accessToken = localStorage.getItem('access_token');
+
+            if (!accessToken) {
+                cartItemsContainer.innerHTML = '<p>Please log in to view your cart.</p>';
+                return;
+            }
+
+            const userId = jwt_decode(accessToken).id;
+            const cartUrl = `http://localhost:5000/api/carts/find/${userId}`;
+
+            fetch(cartUrl, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not OK');
+                }
+                return response.json();
+            })
+            .then(cartData => {
+                displayUserCart(cartData);
+            })
+            .catch(error => {
+                handleFetchError('user cart', error);
+            });
+        });
+
         async function fetchUserCart() {
             try {
                 const accessToken = localStorage.getItem('access_token');
@@ -65,12 +95,13 @@ product is deknA Hai
                 }
 
                 const productData = await response.json();
-                productData.productId = productId;
                 return productData;
             } catch (error) {
                 handleFetchError('product', error);
                 return null;
             }
+            console.log('Fetching product details for productId:', cartItem.productId);
+
         }
 
        
@@ -78,7 +109,6 @@ product is deknA Hai
         function createProductCard(product, quantity) {
             const productCard = document.createElement('div');
             productCard.classList.add('product-card');
-            productCard.setAttribute('data-product-id', product.productId); 
             productCard.innerHTML = `
                 <h2>${product.title}</h2>
                 <img src="${product.img}" alt="Product Image">
@@ -86,9 +116,7 @@ product is deknA Hai
                 <p>Description: ${product.desc}</p>
                 <p>Quantity: <span id="quantity-${product.productId}" data-product-id="${product.productId}">${quantity}</span></p>
                 <button data-product-id="${product.productId}" class="increase-button">Increase</button>
-<button data-product-id="${product.productId}" class="decrease-button">Decrease</button>
-<button data-product-id="${product.productId}" class="delete-button">Delete</button>
-
+                <button data-product-id="${product.productId}" class="decrease-button">Decrease</button>
             `;
 
             return productCard;
@@ -113,23 +141,21 @@ product is deknA Hai
             }
         }
 
-
-        cartItemsContainer.addEventListener('click', async (event) => {
-    if (event.target && event.target.matches('button[data-product-id]')) {
+        // Add a single event listener to the cart container
+        cartItemsContainer.addEventListener('click', (event) => {
+    if (event.target.matches('button[data-product-id]')) {
         const productId = event.target.dataset.productId;
         if (event.target.classList.contains('increase-button')) {
-            increaseQuantity(event);
+            increaseQuantity(productId);
         } else if (event.target.classList.contains('decrease-button')) {
-            decreaseQuantity(event);
-        } else if (event.target.classList.contains('delete-button')) {
-            await deleteProductFromCart(productId);
+            decreaseQuantity(event); // Pass the event object
         }
     }
 });
-
-
     }
 }
+
+    
 
       
         function handleFetchError(type, error) {
@@ -140,92 +166,61 @@ product is deknA Hai
         // Call the function to fetch and display the user's cart
         fetchUserCart();
 
-       
+     
     
-        async function increaseQuantity(event) {
-            const buttonElement = event.target;
+        function increaseQuantity(event) {
+    const buttonElement = event.target;
 
-            if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
-                const productId = buttonElement.dataset.productId;
-                const quantityElement = document.getElementById(`quantity-${productId}`);
+    if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
+        const productId = buttonElement.dataset.productId;
+        const quantityElement = document.getElementById(`quantity-${productId}`);
 
-                if (quantityElement) {
-                    let currentQuantity = parseInt(quantityElement.textContent);
-                    currentQuantity++;
-                    quantityElement.textContent = currentQuantity;
+        if (quantityElement) {
+            let currentQuantity = parseInt(quantityElement.textContent);
+            currentQuantity++;
+            quantityElement.textContent = currentQuantity;
 
-                    // Debug information
-                    console.log(`Increasing quantity for productId: ${productId}`);
-                    console.log(`New quantity: ${currentQuantity}`);
-                } else {
-                    console.log(`Quantity element not found for productId: ${productId}`);
-                }
-            } else {
-                console.log('Invalid buttonElement or productId.');
-            }
+            // Debug information
+            console.log(`Increasing quantity for productId: ${productId}`);
+            console.log(`New quantity: ${currentQuantity}`);
+        } else {
+            console.log(`Quantity element not found for productId: ${productId}`);
         }
-
-        async function decreaseQuantity(event) {
-            const buttonElement = event.target;
-
-            if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
-                const productId = buttonElement.dataset.productId;
-                const quantityElement = document.getElementById(`quantity-${productId}`);
-
-                if (quantityElement) {
-                    let currentQuantity = parseInt(quantityElement.textContent);
-
-                    if (currentQuantity > 1) {
-                        currentQuantity--;
-                        quantityElement.textContent = currentQuantity;
-
-                        // Debug information
-                        console.log(`Decreasing quantity for productId: ${productId}`);
-                        console.log(`New quantity: ${currentQuantity}`);
-                    } else {
-                        console.log(`Quantity cannot be decreased further for productId: ${productId}`);
-                    }
-                } else {
-                    console.log(`Quantity element not found for productId: ${productId}`);
-                }
-            } else {
-                console.log('Invalid buttonElement or productId.');
-            }
-        }  
-
-        async function deleteProductFromCart(productId) {
-    try {
-        const accessToken = localStorage.getItem('access_token');
-
-        if (!accessToken) {
-            throw new Error('Access token not found.');
-        }
-
-        const userId = jwt_decode(accessToken).id;
-        // const cartUrl = `http://localhost:5000/api/carts/${userId}`;
-        const cartUrl = `http://localhost:5000/api/carts/${userId}/${productId}`; // Include productId in the URL
-        const response = await fetch(cartUrl, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not OK');
-        }
-
-        // Remove the product card from the user interface
-        const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
-        if (productCard) {
-            productCard.remove();
-        }
-
-        // You can handle the updated cart data as needed.
-    } catch (error) {
-        handleFetchError('delete product', error);
+    } else {
+        console.log('Invalid buttonElement or productId.');
     }
 }
+
+
+
+function decreaseQuantity(event) {
+    const buttonElement = event.target;
+
+    if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
+        const productId = buttonElement.dataset.productId;
+        const quantityElement = document.getElementById(`quantity-${productId}`);
+
+        if (quantityElement) {
+            let currentQuantity = parseInt(quantityElement.textContent);
+
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                quantityElement.textContent = currentQuantity;
+
+                // Debug information
+                console.log(`Decreasing quantity for productId: ${productId}`);
+                console.log(`New quantity: ${currentQuantity}`);
+            } else {
+                console.log(`Quantity cannot be decreased further for productId: ${productId}`);
+            }
+        } else {
+            console.log(`Quantity element not found for productId: ${productId}`);
+        }
+    } else {
+        console.log('Invalid buttonElement or productId.');
+    }
+}
+
 
 
 async function updateCart(productId, newQuantity) {
@@ -258,8 +253,7 @@ async function updateCart(productId, newQuantity) {
     }
 }
 
-     
+
     </script>
 </body>
 </html>
-
