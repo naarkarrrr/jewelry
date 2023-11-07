@@ -10,8 +10,311 @@
 <body>
     <h1>User Cart</h1>
     
-product is deknA Hai 
+
     <div id="cart-items" class="product-container"></div>
+    <div id="total-price">Total Price: $0.00</div>
+
+  
+
+    <style>
+        /* Add CSS styles for improved presentation */
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            width: 200px;
+        }
+        .product-card img {
+            max-width: 100%;
+        }
+    </style>
+
+    <script>
+        async function fetchUserCart() {
+            try {
+                const accessToken = localStorage.getItem('access_token');
+
+                if (!accessToken) {
+                    throw new Error('Access token not found.');
+                }
+
+                const userId = jwt_decode(accessToken).id;
+                const cartUrl = `http://localhost:5000/api/carts/find/${userId}`;
+                const response = await fetch(cartUrl, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not OK');
+                }
+
+                const cartData = await response.json();
+                displayUserCart(cartData);
+            } catch (error) {
+                handleFetchError('user cart', error);
+            }
+        }
+
+        async function fetchProductDetails(productId) {
+            try {
+                const productUrl = `http://localhost:5000/api/products/find/${productId}`;
+                const response = await fetch(productUrl);
+
+                if (!response.ok) {
+                    throw new Error('Network response was not OK');
+                }
+
+                const productData = await response.json();
+                productData.productId = productId;
+                return productData;
+            } catch (error) {
+                handleFetchError('product', error);
+                return null;
+            }
+        }
+
+       
+
+
+        function createProductCard(product, quantity) {
+    const productCard = document.createElement('div');
+    productCard.classList.add('product-card');
+    productCard.setAttribute('data-product-id', product.productId); 
+    productCard.innerHTML = `
+        <h2>${product.title}</h2>
+        <img src="${product.img}" alt="Product Image">
+        <p>Price: <span class="product-price">${product.price}</span></p>
+        <p>Description: ${product.desc}</p>
+        <p>Quantity: <span id="quantity-${product.productId}" data-product-id="${product.productId}">${quantity}</span></p>
+        <button data-product-id="${product.productId}" class="increase-button">Increase</button>
+        <button data-product-id="${product.productId}" class="decrease-button">Decrease</button>
+        <button data-product-id="${product.productId}" class="delete-button">Delete</button>
+    `;
+
+    return productCard;
+}
+
+async function displayUserCart(cartData) {
+    const cartItemsContainer = document.getElementById('cart-items');
+    cartItemsContainer.innerHTML = '';
+
+    let totalPrice = 0; // Initialize the total price
+
+    if (!cartData || !cartData.products || cartData.products.length === 0) {
+        cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+    } else {
+        for (const cartItem of cartData.products) {
+            if (cartItem.productId && cartItem.productId !== 'undefined') {
+                console.log('Fetching product details for productId:', cartItem.productId);
+                const productData = await fetchProductDetails(cartItem.productId);
+                if (productData) {
+                    const productCard = createProductCard(productData, cartItem.quantity);
+                    cartItemsContainer.appendChild(productCard);
+
+                    // Calculate and update the total price for this product
+                    totalPrice += productData.price * cartItem.quantity;
+                }
+            }
+        }
+
+        // Display the total price in the HTML element
+        const totalPriceElement = document.getElementById('total-price');
+        if (totalPriceElement) {
+            totalPriceElement.textContent = `Total Price: $${totalPrice.toFixed(2)}`;
+        }
+
+        cartItemsContainer.addEventListener('click', async (event) => {
+    if (event.target && event.target.matches('button[data-product-id]')) {
+         const productId = event.target.dataset.productId;
+         if (event.target.classList.contains('increase-button')) {
+            increaseQuantity(event);
+         } else if (event.target.classList.contains('decrease-button')) {
+             decreaseQuantity(event);
+         } else if (event.target.classList.contains('delete-button')) {
+             await deleteProductFromCart(productId);
+         }
+     }
+ });
+    }
+}
+
+
+
+      
+        function handleFetchError(type, error) {
+            console.error(`Error fetching ${type}:`, error);
+            // Handle the error as needed, e.g., display an error message to the user.
+        }
+
+        // Call the function to fetch and display the user's cart
+        fetchUserCart();
+
+        async function increaseQuantity(event) {
+    const buttonElement = event.target;
+
+    if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
+        const productId = buttonElement.dataset.productId;
+        const quantityElement = document.getElementById(`quantity-${productId}`);
+
+        if (quantityElement) {
+            let currentQuantity = parseInt(quantityElement.textContent);
+            currentQuantity++;
+            quantityElement.textContent = currentQuantity;
+
+            // Calculate and update the total price when quantity increases
+            updateTotalPrice();
+        } else {
+            console.log(`Quantity element not found for productId: ${productId}`);
+        }
+    } else {
+        console.log('Invalid buttonElement or productId.');
+    }
+}
+
+async function decreaseQuantity(event) {
+    const buttonElement = event.target;
+
+    if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
+        const productId = buttonElement.dataset.productId;
+        const quantityElement = document.getElementById(`quantity-${productId}`);
+
+        if (quantityElement) {
+            let currentQuantity = parseInt(quantityElement.textContent);
+
+            if (currentQuantity > 1) {
+                currentQuantity--;
+                quantityElement.textContent = currentQuantity;
+
+                // Calculate and update the total price when quantity decreases
+                updateTotalPrice();
+            } else {
+                console.log(`Quantity cannot be decreased further for productId: ${productId}`);
+            }
+        } else {
+            console.log(`Quantity element not found for productId: ${productId}`);
+        }
+    } else {
+        console.log('Invalid buttonElement or productId.');
+    }
+}
+
+function updateTotalPrice() {
+    const productCards = document.querySelectorAll('.product-card');
+    let total = 0;
+
+    productCards.forEach((productCard) => {
+        const productId = productCard.getAttribute('data-product-id');
+        const quantityElement = productCard.querySelector(`#quantity-${productId}`);
+        const priceElement = productCard.querySelector('.product-price');
+
+        if (quantityElement && priceElement) {
+            const quantity = parseInt(quantityElement.textContent);
+            const price = parseFloat(priceElement.textContent);
+            total += quantity * price;
+        }
+    });
+
+    // Display the updated total price in the HTML element
+    const totalPriceElement = document.getElementById('total-price');
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `Total Price: $${total.toFixed(2)}`;
+    }
+}
+
+
+
+        async function deleteProductFromCart(productId) {
+    try {
+        const accessToken = localStorage.getItem('access_token');
+
+        if (!accessToken) {
+            throw new Error('Access token not found.');
+        }
+
+        const userId = jwt_decode(accessToken).id;
+     
+        const cartUrl = `http://localhost:5000/api/carts/${userId}/${productId}`; // Include productId
+        const response = await fetch(cartUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not OK');
+        }
+
+        // Remove the product card from the user interface
+        const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+        if (productCard) {
+            productCard.remove();
+        }
+
+        // You can handle the updated cart data as needed.
+    } catch (error) {
+        handleFetchError('delete product', error);
+    }
+}
+
+
+async function updateCart(productId, newQuantity) {
+    try {
+        const accessToken = localStorage.getItem('access_token');
+
+        if (!accessToken) {
+            throw new Error('Access token not found.');
+        }
+
+        const userId = jwt_decode(accessToken).id;
+        const cartUrl = `http://localhost:5000/api/carts/${userId}`;
+        const response = await fetch(cartUrl, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId, quantity: newQuantity }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not OK');
+        }
+
+        const updatedCartData = await response.json();
+        // You can handle the updated cart data as needed.
+    } catch (error) {
+        handleFetchError('update cart', error);
+    }
+}
+
+     
+    </script>
+</body>
+</html>
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Cart</title>
+    <link rel="stylesheet" href="/custom-styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+</head>
+<body>
+    <h1>User Cart</h1>
+    
+
+    <div id="cart-items" class="product-container"></div>
+
+   
 
     <style>
         /* Add CSS styles for improved presentation */
@@ -202,8 +505,8 @@ product is deknA Hai
         }
 
         const userId = jwt_decode(accessToken).id;
-        // const cartUrl = `http://localhost:5000/api/carts/${userId}`;
-        const cartUrl = `http://localhost:5000/api/carts/${userId}/${productId}`; // Include productId in the URL
+     
+        const cartUrl = `http://localhost:5000/api/carts/${userId}/${productId}`; // Include productId
         const response = await fetch(cartUrl, {
             method: 'DELETE',
             headers: {
@@ -261,5 +564,5 @@ async function updateCart(productId, newQuantity) {
      
     </script>
 </body>
-</html>
+</html> -->
 

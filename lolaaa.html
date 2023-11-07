@@ -9,8 +9,12 @@
 </head>
 <body>
     <h1>User Cart</h1>
+    
 
     <div id="cart-items" class="product-container"></div>
+    <div id="total-price">Total Price: $0.00</div>
+
+  
 
     <style>
         /* Add CSS styles for improved presentation */
@@ -27,37 +31,6 @@
     </style>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const cartItemsContainer = document.getElementById('cart-items');
-            const accessToken = localStorage.getItem('access_token');
-
-            if (!accessToken) {
-                cartItemsContainer.innerHTML = '<p>Please log in to view your cart.</p>';
-                return;
-            }
-
-            const userId = jwt_decode(accessToken).id;
-            const cartUrl = `http://localhost:5000/api/carts/find/${userId}`;
-
-            fetch(cartUrl, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not OK');
-                }
-                return response.json();
-            })
-            .then(cartData => {
-                displayUserCart(cartData);
-            })
-            .catch(error => {
-                handleFetchError('user cart', error);
-            });
-        });
-
         async function fetchUserCart() {
             try {
                 const accessToken = localStorage.getItem('access_token');
@@ -95,37 +68,40 @@
                 }
 
                 const productData = await response.json();
+                productData.productId = productId;
                 return productData;
             } catch (error) {
                 handleFetchError('product', error);
                 return null;
             }
-            console.log('Fetching product details for productId:', cartItem.productId);
-
         }
 
        
 
+
         function createProductCard(product, quantity) {
-            const productCard = document.createElement('div');
-            productCard.classList.add('product-card');
-            productCard.innerHTML = `
-                <h2>${product.title}</h2>
-                <img src="${product.img}" alt="Product Image">
-                <p>Price: ${product.price}</p>
-                <p>Description: ${product.desc}</p>
-                <p>Quantity: <span id="quantity-${product.productId}" data-product-id="${product.productId}">${quantity}</span></p>
-                <button data-product-id="${product.productId}" class="increase-button">Increase</button>
-                <button data-product-id="${product.productId}" class="decrease-button">Decrease</button>
-            `;
+    const productCard = document.createElement('div');
+    productCard.classList.add('product-card');
+    productCard.setAttribute('data-product-id', product.productId); 
+    productCard.innerHTML = `
+        <h2>${product.title}</h2>
+        <img src="${product.img}" alt="Product Image">
+        <p>Price: <span class="product-price">${product.price}</span></p>
+        <p>Description: ${product.desc}</p>
+        <p>Quantity: <span id="quantity-${product.productId}" data-product-id="${product.productId}">${quantity}</span></p>
+        <button data-product-id="${product.productId}" class="increase-button">Increase</button>
+        <button data-product-id="${product.productId}" class="decrease-button">Decrease</button>
+        <button data-product-id="${product.productId}" class="delete-button">Delete</button>
+    `;
 
-            return productCard;
-        }
+    return productCard;
+}
 
-
-        async function displayUserCart(cartData) {
+async function displayUserCart(cartData) {
     const cartItemsContainer = document.getElementById('cart-items');
     cartItemsContainer.innerHTML = '';
+
+    let totalPrice = 0; // Initialize the total price
 
     if (!cartData || !cartData.products || cartData.products.length === 0) {
         cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
@@ -137,25 +113,35 @@
                 if (productData) {
                     const productCard = createProductCard(productData, cartItem.quantity);
                     cartItemsContainer.appendChild(productCard);
+
+                    // Calculate and update the total price for this product
+                    totalPrice += productData.price * cartItem.quantity;
                 }
             }
         }
 
-        // Add a single event listener to the cart container
-        cartItemsContainer.addEventListener('click', (event) => {
-    if (event.target.matches('button[data-product-id]')) {
-        const productId = event.target.dataset.productId;
-        if (event.target.classList.contains('increase-button')) {
-            increaseQuantity(productId);
-        } else if (event.target.classList.contains('decrease-button')) {
-            decreaseQuantity(event); // Pass the event object
+        // Display the total price in the HTML element
+        const totalPriceElement = document.getElementById('total-price');
+        if (totalPriceElement) {
+            totalPriceElement.textContent = `Total Price: $${totalPrice.toFixed(2)}`;
         }
-    }
-});
+
+        cartItemsContainer.addEventListener('click', async (event) => {
+    if (event.target && event.target.matches('button[data-product-id]')) {
+         const productId = event.target.dataset.productId;
+         if (event.target.classList.contains('increase-button')) {
+            increaseQuantity(event);
+         } else if (event.target.classList.contains('decrease-button')) {
+             decreaseQuantity(event);
+         } else if (event.target.classList.contains('delete-button')) {
+             await deleteProductFromCart(productId);
+         }
+     }
+ });
     }
 }
 
-    
+
 
       
         function handleFetchError(type, error) {
@@ -166,9 +152,7 @@
         // Call the function to fetch and display the user's cart
         fetchUserCart();
 
-     
-    
-        function increaseQuantity(event) {
+        async function increaseQuantity(event) {
     const buttonElement = event.target;
 
     if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
@@ -180,9 +164,8 @@
             currentQuantity++;
             quantityElement.textContent = currentQuantity;
 
-            // Debug information
-            console.log(`Increasing quantity for productId: ${productId}`);
-            console.log(`New quantity: ${currentQuantity}`);
+            // Calculate and update the total price when quantity increases
+            updateTotalPrice();
         } else {
             console.log(`Quantity element not found for productId: ${productId}`);
         }
@@ -191,9 +174,7 @@
     }
 }
 
-
-
-function decreaseQuantity(event) {
+async function decreaseQuantity(event) {
     const buttonElement = event.target;
 
     if (buttonElement && buttonElement.dataset && buttonElement.dataset.productId) {
@@ -207,9 +188,8 @@ function decreaseQuantity(event) {
                 currentQuantity--;
                 quantityElement.textContent = currentQuantity;
 
-                // Debug information
-                console.log(`Decreasing quantity for productId: ${productId}`);
-                console.log(`New quantity: ${currentQuantity}`);
+                // Calculate and update the total price when quantity decreases
+                updateTotalPrice();
             } else {
                 console.log(`Quantity cannot be decreased further for productId: ${productId}`);
             }
@@ -221,6 +201,64 @@ function decreaseQuantity(event) {
     }
 }
 
+function updateTotalPrice() {
+    const productCards = document.querySelectorAll('.product-card');
+    let total = 0;
+
+    productCards.forEach((productCard) => {
+        const productId = productCard.getAttribute('data-product-id');
+        const quantityElement = productCard.querySelector(`#quantity-${productId}`);
+        const priceElement = productCard.querySelector('.product-price');
+
+        if (quantityElement && priceElement) {
+            const quantity = parseInt(quantityElement.textContent);
+            const price = parseFloat(priceElement.textContent);
+            total += quantity * price;
+        }
+    });
+
+    // Display the updated total price in the HTML element
+    const totalPriceElement = document.getElementById('total-price');
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `Total Price: $${total.toFixed(2)}`;
+    }
+}
+
+
+
+        async function deleteProductFromCart(productId) {
+    try {
+        const accessToken = localStorage.getItem('access_token');
+
+        if (!accessToken) {
+            throw new Error('Access token not found.');
+        }
+
+        const userId = jwt_decode(accessToken).id;
+     
+        const cartUrl = `http://localhost:5000/api/carts/${userId}/${productId}`; // Include productId
+        const response = await fetch(cartUrl, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not OK');
+        }
+
+        // Remove the product card from the user interface
+        const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+        if (productCard) {
+            productCard.remove();
+        }
+
+        // You can handle the updated cart data as needed.
+    } catch (error) {
+        handleFetchError('delete product', error);
+    }
+}
 
 
 async function updateCart(productId, newQuantity) {
@@ -253,7 +291,8 @@ async function updateCart(productId, newQuantity) {
     }
 }
 
-
+     
     </script>
 </body>
 </html>
+
