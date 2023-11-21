@@ -14,6 +14,7 @@
     <div id="cart-items" class="product-container"></div>
     <div id="total-price">Total Price: $0.00</div>
 
+    <button id="checkout-button" href="/checkout-form.html" >Checkout</button>
   
 
     <style>
@@ -57,7 +58,7 @@
                 handleFetchError('user cart', error);
             }
         }
-
+        
         async function fetchProductDetails(productId) {
             try {
                 const productUrl = `http://localhost:5000/api/products/find/${productId}`;
@@ -291,8 +292,7 @@ async function updateCart(productId, newQuantity) {
     }
 }
 
-     
+
     </script>
 </body>
 </html>
-

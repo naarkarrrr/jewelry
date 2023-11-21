@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+    <title>Checkout Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <style>
+      .body {
+        text-align: center;
+
+        border: black solid;
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 30px;
+        box-shadow: 10px 2px 5px gray;
+        padding-bottom: 10px;
+      }
+
+
+      .product-image {
+        max-width: 100px; /* Adjust as needed */
+        max-height: 100px; /* Adjust as needed */
+      }
+    </style>
+  </head>
+  <body class="body">
+    <h2>Personal Information</h2>
+
+    <form action="/submit_checkout" method="post" id="checkoutForm">
+      <label for="fname">First Name:</label><br />
+      <input type="text" id="fname" name="fname" /><br />
+      <label for="lname">Last Name:</label><br />
+      <input type="text" id="lname" name="lname" /><br />
+      <label for="email">Email:</label><br />
+      <input type="text" id="email" name="email" /><br />
+      <label for="phone">Phone:</label><br />
+      <input type="text" id="phone" name="phone" /><br />
+      <label for="address">Address:</label><br />
+      <input type="text" id="address" name="address" /><br />
+      <label for="city">City:</label><br />
+      <input type="text" id="city" name="city" /><br />
+      <label for="state">State:</label><br />
+      <input type="text" id="state" name="state" /><br />
+      <label for="zip">Zip:</label><br />
+      <input type="text" id="zip" name="zip" /><br />
+      <label for="country">Country:</label><br />
+      <input type="text" id="country" name="country" /><br />
+
+      <h2>Cart Items</h2>
+      <div id="productDetails"></div>
+
+      <br />
+      <input type="submit" value="Continue to Shopping" />
+    </form>
+
+    <script>
+      // Define the handleFetchError function
+      function handleFetchError(type, error) {
+        console.error(`Error fetching ${type}:`, error);
+        // Handle the error as needed, e.g., display an error message to the user.
+      }
+
+      // Fetch user cart data and display it dynamically
+      async function fetchUserCart() {
+        try {
+          const accessToken = localStorage.getItem("access_token");
+
+          if (!accessToken) {
+            throw new Error("Access token not found.");
+          }
+
+          const userId = jwt_decode(accessToken).id;
+          const cartUrl = `http://localhost:5000/api/carts/find/${userId}`;
+          const response = await fetch(cartUrl, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not OK");
+          }
+
+          const cartData = await response.json();
+          displayUserCart(cartData);
+        } catch (error) {
+          handleFetchError("user cart", error);
+        }
+      }
+
+   
+
+
+    async function displayUserCart(cartData) {
+  const productDetailsContainer = document.getElementById("productDetails");
+  productDetailsContainer.innerHTML = "";
+
+  async function fetchProductDetails(productId) {
+    try {
+      const productUrl = `http://localhost:5000/api/products/find/${productId}`;
+      const response = await fetch(productUrl);
+
+      if (!response.ok) {
+        throw new Error("Network response was not OK");
+      }
+
+      return await response.json();
+    } catch (error) {
+      handleFetchError("product", error);
+      return null;
+    }
+  }
+
+  let totalCartPrice = 0;
+
+  for (const cartItem of cartData.products) {
+    try {
+      const productData = await fetchProductDetails(cartItem.productId);
+
+      if (productData) {
+        const cartItemElement = document.createElement("div");
+        const totalProductPrice = productData.price * cartItem.quantity;
+        totalCartPrice += totalProductPrice;
+
+        cartItemElement.innerHTML = `
+        <img class="product-image" src="${productData.img}" alt="${productData.title}">
+          <p>Title: ${productData.title}</p>
+          <p>Price Per Unit: ${productData.price}</p>
+         <p>Price for ${cartItem.quantity} Unit : ${totalProductPrice.toFixed(2)}</p>
+          <hr>
+        `;
+        productDetailsContainer.appendChild(cartItemElement);
+      }
+    } catch (error) {
+      handleFetchError("product", error);
+    }
+  }
+
+  // Display the total cart price
+  const totalCartPriceElement = document.createElement("div");
+  totalCartPriceElement.innerHTML = `<h3>Total Cart Price: ${totalCartPrice.toFixed(2)}</h3>`;
+  productDetailsContainer.appendChild(totalCartPriceElement);
+}
+
+
+      fetchUserCart();
+    </script>
+  </body>
+</html>
