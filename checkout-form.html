@@ -27,31 +27,35 @@
   <body class="body">
     <h2>Personal Information</h2>
 
-    <form action="/submit_checkout" method="post" id="checkoutForm">
-      <label for="fname">First Name:</label><br />
-      <input type="text" id="fname" name="fname" /><br />
-      <label for="lname">Last Name:</label><br />
-      <input type="text" id="lname" name="lname" /><br />
+    <form action="" method="post" id="checkoutForm" onsubmit="submitOrder(event)">
+      <label for="fullname">Full Name:</label><br />
+      <input type="text" id="fullname" name="fullname" /><br />
       <label for="email">Email:</label><br />
       <input type="text" id="email" name="email" /><br />
       <label for="phone">Phone:</label><br />
       <input type="text" id="phone" name="phone" /><br />
+      <label for="alternatephone"> Alternate Phone:</label><br />
+      <input type="text" id="alternatephone" name="alternatephone" /><br />
       <label for="address">Address:</label><br />
       <input type="text" id="address" name="address" /><br />
       <label for="city">City:</label><br />
       <input type="text" id="city" name="city" /><br />
+      <label for="district">District:</label><br />
+      <input type="text" id="district" name="district" /><br />
       <label for="state">State:</label><br />
       <input type="text" id="state" name="state" /><br />
       <label for="zip">Zip:</label><br />
       <input type="text" id="zip" name="zip" /><br />
       <label for="country">Country:</label><br />
-      <input type="text" id="country" name="country" /><br />
+      <input type="text" id="country"  name="country" /><br />
 
       <h2>Cart Items</h2>
       <div id="productDetails"></div>
 
       <br />
-      <input type="submit" value="Continue to Shopping" />
+   
+      <input type="submit" value="Place Order" />
+  
     </form>
 
     <script>
@@ -61,6 +65,7 @@
         // Handle the error as needed, e.g., display an error message to the user.
       }
 
+      let cartData;
       // Fetch user cart data and display it dynamically
       async function fetchUserCart() {
         try {
@@ -139,12 +144,72 @@
 
   // Display the total cart price
   const totalCartPriceElement = document.createElement("div");
-  totalCartPriceElement.innerHTML = `<h3>Total Cart Price: ${totalCartPrice.toFixed(2)}</h3>`;
-  productDetailsContainer.appendChild(totalCartPriceElement);
+totalCartPriceElement.innerHTML = `<h3>Total Cart Price: ${totalCartPrice.toFixed(2)}</h3>`;
+productDetailsContainer.appendChild(totalCartPriceElement);
+ 
+
+const checkoutForm = document.getElementById("checkoutForm");
+checkoutForm.addEventListener("submit", (event) => {
+  event.preventDefault(); // Prevent the default form submission
+  submitOrder(cartData, totalCartPrice, event);
+});
+
 }
 
 
       fetchUserCart();
+
+      async function submitOrder(cartData, totalCartPrice, event) {
+  event.preventDefault(); // Ensure that preventDefault is called on the event object
+
+  // Extract user ID from the decoded JWT token
+  const accessToken = localStorage.getItem("access_token");
+  const userId = jwt_decode(accessToken).id;
+
+  // Extract form data
+  const formData = {
+    userId: userId,
+    fullname: document.getElementById("fullname").value,
+    email: document.getElementById("email").value,
+    number: document.getElementById("phone").value,
+    alternatenumber: document.getElementById("alternatephone").value,
+    address: {
+      address: document.getElementById("address").value,
+      city: document.getElementById("city").value,
+      district: document.getElementById("district").value,
+      state: document.getElementById("state").value,
+      zip: document.getElementById("zip").value,
+      country: document.getElementById("country").value,
+    },
+    products: cartData.products,
+    amount: totalCartPrice,
+  };
+
+  // Send the form data to the server
+  try {
+    const response = await fetch("http://localhost:5000/api/orders/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not OK");
+    }
+
+    const orderData = await response.json();
+    console.log("Order created successfully:", orderData);
+  } catch (error) {
+    handleFetchError("order", error);
+  }
+}
+
+
+
+
     </script>
   </body>
 </html>

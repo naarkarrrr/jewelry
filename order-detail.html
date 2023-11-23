@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Orders</title>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+      .body {
+        text-align: center;
+        border: black solid;
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 30px;
+        box-shadow: 10px 2px 5px gray;
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body class="body">
+    <h2>User Orders</h2>
+
+    <div id="orderDetails"></div>
+    <form id="paymentForm">
+      <label for="amount" >Amount (INR): </label>
+      <input type="number" id="amount" name="amount" required min="1" />
+      <br/>
+      <button type="button" onclick="getRazorpayKeyAndCreateOrder()">
+        Pay Now
+      </button>
+    </form>
+    <script>
+      function handleFetchError(type, error) {
+        console.error(`Error fetching ${type}:`, error);
+        // Handle the error as needed, e.g., display an error message to the user.
+      }
+
+      async function fetchUserOrders() {
+        try {
+          const accessToken = localStorage.getItem("access_token");
+
+          if (!accessToken) {
+            throw new Error("Access token not found.");
+          }
+
+          const userId = jwt_decode(accessToken).id;
+          const ordersUrl = `http://localhost:5000/api/orders/find/${userId}`;
+          const response = await fetch(ordersUrl, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not OK");
+          }
+
+          const orderData = await response.json();
+          displayUserOrders(orderData);
+        } catch (error) {
+          handleFetchError("user orders", error);
+        }
+      }
+
+      function displayUserOrders(orderData) {
+        const orderDetailsContainer = document.getElementById("orderDetails");
+        orderDetailsContainer.innerHTML = "";
+
+        for (const order of orderData) {
+          const orderElement = document.createElement("div");
+
+          orderElement.innerHTML = `
+          <h3>Order Number: ${order._id}</h3>
+          <p>Full Name: ${order.fullname}</p>
+          <p>Email: ${order.email}</p>
+          <p>phone: ${order.number} and Alternate Phone:${
+            order.alternatenumber
+          }  </p>
+          <p>Order Amount: ${order.amount.toFixed(2)}</p>
+          <p>Order Date: ${new Date(order.createdAt).toLocaleString()}</p>
+          <hr>
+        `;
+
+          orderDetailsContainer.appendChild(orderElement);
+        }
+      }
+
+      fetchUserOrders();
+
+    // This is an asynchronous function
+async function getRazorpayKeyAndCreateOrder() {
+  try {
+    // Fetch Razorpay key from your server
+    const response = await fetch("http://localhost:5000/api/payment/getRazorpayKey");
+    const { key } = await response.json();
+
+    // Create the order using the fetched key
+    createOrder(key);
+  } catch (error) {
+    console.error("Error getting Razorpay key:", error);
+    // Handle the error, e.g., display an error message to the user
+  }
+}
+
+// This is also an asynchronous function
+async function createOrder(key) {
+  const amount = document.getElementById("amount").value;
+
+  try {
+    const response = await fetch("http://localhost:5000/api/payment/createOrder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: amount }),
+    });
+
+    const order = await response.json();
+    console.log("Order created:", order);
+
+    // Redirect the user to the Razorpay checkout page
+    const options = {
+      key: key, // Use the passed Razorpay key
+      amount: order.amount,
+      currency: order.currency,
+      name: "Kaafi",
+      description: "Payment for Your Product",
+      order_id: order.id,
+      handler: function (response) {
+        console.log("Payment successful:", response);
+        // Handle the successful payment, e.g., update the UI or backend
+      },
+      prefill: {
+        name: `${order.fullname}`,
+        email: `${order.email}`,
+        contact: `${order.number}`,
+      },
+      theme: {
+        color: "#528FF0",
+      },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  } catch (error) {
+    console.error("Error creating order:", error);
+    // Handle the error, e.g., display an error message to the user
+  }
+}
+
+// Call the asynchronous function
+getRazorpayKeyAndCreateOrder();
+    </script>
+  </body>
+</html>
