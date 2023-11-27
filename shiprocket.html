@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShipRocket API Frontend</title>
+</head>
+<body>
+
+  <h1>ShipRocket API Frontend</h1>
+
+  <button onclick="getOrders()">Get Orders</button>
+
+  <div>
+    <h2>Create Shipment</h2>
+    <!-- Add input fields to gather shipment data -->
+    <button onclick="createShipment()">Create Shipment</button>
+  </div>
+
+  <div>
+    <button onclick="fetchShippingRates()">Fetch Shipping Rates</button>
+    <!-- Display shipping rates -->
+    <div id="shippingRates"></div>
+  </div>
+
+  <div>
+    <h2>Update Order Status</h2>
+    <!-- Add input fields to gather order status data -->
+    <button onclick="updateOrderStatus()">Update Order Status</button>
+  </div>
+
+  <script>
+    const apiUrl = 'http://localhost:your_backend_port'; // Update with your backend URL and port
+
+    const getOrders = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/orders`);
+        const orders = await response.json();
+        console.log('Orders:', orders);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
+
+    const createShipment = async () => {
+      try {
+        // Gather shipment data from input fields
+        const shipmentData = {
+          // Add shipment data properties
+        };
+
+        await fetch(`${apiUrl}/shipments`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order_id: 'your_order_id', shipment: shipmentData }),
+        });
+
+        console.log('Shipment created successfully');
+      } catch (error) {
+        console.error('Error creating shipment:', error);
+      }
+    };
+
+    const fetchShippingRates = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/shipping-rates`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({}),
+        });
+
+        const shippingRates = await response.json();
+
+        // Display shipping rates
+        const shippingRatesContainer = document.getElementById('shippingRates');
+        shippingRatesContainer.innerHTML = shippingRates.map(rate => `${rate.service_name}: ${rate.rate}`).join('<br>');
+      } catch (error) {
+        console.error('Error fetching shipping rates:', error);
+      }
+    };
+
+    const updateOrderStatus = async () => {
+      try {
+        // Gather order status data from input fields
+        const orderStatus = {
+          order_id: 'your_order_id',
+          status: 'your_status',
+        };
+
+        await fetch(`${apiUrl}/update-order-status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderStatus),
+        });
+
+        console.log('Order status updated successfully');
+      } catch (error) {
+        console.error('Error updating order status:', error);
+      }
+    };
+  </script>
+
+</body>
+</html>

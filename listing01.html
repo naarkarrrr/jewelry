@@ -332,14 +332,14 @@
 </select>
 <button id="filter-button">Filter</button>
 
-<!-- <div id="price-filter-widget" class="single-widget widget-pricefilter">
+<div id="price-filter-widget" class="single-widget widget-pricefilter">
   <h6 class="widget-title">Filter by Price</h6>
   <div class="widget-pricefilter-inner">
     <input type="range" id="price-slider" min="0" max="800" step="1" value="0">
     <p class="widget-pricefilter-price">Price: &#x20B9;<span id="min-price-label">0</span> - &#x20B9;<span id="max-price-label">800</span></p>
     <button class="widget-pricefilter-button">Filter</button>
   </div>
-</div> -->
+</div>
 
 
                                    
@@ -478,26 +478,7 @@ document.body.addEventListener('click', (event) => {
 
   </script>
 
-<!-- <script>
-  const categories = ["Men's", "Women's","Rings", "Pendants", "Charms", "Necklaces"];
 
-  function populateCategoryList() {
-    const categoryList = document.getElementById("category-list");
-  
-    // Clear the existing content of the category list
-    categoryList.innerHTML = '';
-  
-    // Loop through the categories and create list items
-    categories.forEach((category) => {
-      const listItem = document.createElement("li");
-      listItem.textContent = category;
-      categoryList.appendChild(listItem);
-    }); // Add the closing parenthesis here
-  }
-
-  // Call the function to populate the category list
-  populateCategoryList();
-</script> -->
 
 <script>
 const categories = ["Men's", "Women's", "Rings", "Pendants", "Charms", "Necklaces"];
@@ -540,63 +521,6 @@ filterButton.addEventListener('click', () => {
 
 
 </script>
-
-<!-- <script>
-// Function to fetch products from the server
-function fetchProducts() {
-  // Make an API request to your server to fetch product data
-  fetch('http://localhost:5000/api/products/all')
-    .then(response => response.json())
-    .then(products => {
-      // Store the fetched products in a variable
-      displayProducts(products);
-    })
-    .catch(error => {
-      console.error('Error fetching products:', error);
-    });
-}
-
-// Function to display products
-function displayProducts(products) {
-  const productList = document.getElementById('product-list');
-  productList.innerHTML = ''; // Clear the existing product list
-
-  products.forEach(product => {
-    // Create product card and add it to the product list
-    const productCard = createProductCard(product);
-    productList.appendChild(productCard);
-  });
-}
-
-// Function to filter products based on price range
-function filterProductsByPrice(minPrice, maxPrice) {
-  // Fetch the selected price range and filter products
-  fetch('http://localhost:5000/api/products/all/filter?minPrice=' + minPrice + '&maxPrice=' + maxPrice)
-    .then(response => response.json())
-    .then(products => {
-      // Update the displayed products with the filtered products
-      displayProducts(products);
-    })
-    .catch(error => {
-      console.error('Error filtering products:', error);
-    });
-}
-
-// Initialize the page by fetching and displaying all products
-fetchProducts();
-let currentMinPrice = 0;
-// Add an event listener to the price filter button
-const filterButton = document.querySelector('.widget-pricefilter-button');
-filterButton.addEventListener('click', () => {
-  const minPrice = currentMinPrice; // Get the selected min price from the slider
-  const maxPrice = currentMaxPrice; // Get the selected max price from the slider
-  filterProductsByPrice(minPrice, maxPrice);
-});
-</script> -->
-
-
-
- 
 
   <!-- include jQuery -->
   <script src="js/jquery-1.11.3.min.js"></script>

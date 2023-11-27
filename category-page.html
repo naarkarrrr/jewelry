@@ -18,7 +18,31 @@
   <!-- include the site stylesheet -->
   <link rel="stylesheet" href="style.css">
   <!-- include the site stylesheet -->
+
+
   <link rel="stylesheet" href="css/color/color.css">
+
+<style>
+
+  
+.grid-container{
+ padding: 5px;
+ display: grid;
+  grid-template-columns: auto auto auto auto;
+ gap: 1%;
+}
+
+.img-responsive{
+  max-width: 330px;
+}
+
+.quantity-input{
+  width: 50px;
+}
+
+ 
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </head>
 <body>
   <!-- Page Loader -->
@@ -190,185 +214,19 @@
           <div class="row">
             <div class="col-xs-12">
               <ul class="list-unstyled filter-list">
-                <li class="active"><a href="#">all</a></li>
-                <li><a href="#" data-filter=".rings">rings</a></li>
-                <li><a href="#" data-filter=".pendants">pendants</a></li>
-                <li><a href="#" data-filter=".charms">charms</a></li>
-                <li><a href="#" data-filter=".necklaces">necklaces</a></li>
-                <li><a href="#" data-filter=".brooches">brooches</a></li>
-                <li><a href="#" data-filter=".men">men’s</a></li>
+                <li><input type="checkbox" class="category-checkbox" value="Charms"> Charms</li>
+                <li><input type="checkbox" class="category-checkbox" value="Rings"> Rings</li>
+                <li><input type="checkbox" class="category-checkbox" value="Pendants"> Pendants</li>
+                <li><input type="checkbox" class="category-checkbox" value="Rings"> Rings</li>
+                <li><input type="checkbox" class="category-checkbox" value="Women's"> Women's</li>
+                <li>  <input type="checkbox" class="category-checkbox" value="Men's"> Men’s</a></li>
               </ul>
             </div>
           </div>
         </div>
-        <div class="holder" id="masonry-container">
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 pendants">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(1).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 charms rings">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(2).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-1 pendants">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/980x620_.jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-1 necklaces">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/960x620.jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-1 earrings">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="product-page.html" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/960x1235.jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 men necklace">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(3).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 pendants men">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(4).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 pendants">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(5).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 Bracelet">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(6).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 pendants">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(7).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <div class="product-block coll-2 Bracelet">
-            <div class="over">
-              <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">Goldtone Bib</a></strong>
-                <strong class="price"><del>₹150</del> ₹120</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-            </div>
-            <img class="img-responsive" alt="image description" src="images/480x620(8).jpg">
-          </div>
-          <!-- product-block of the page -->
-          <!-- <div class="product-block coll-2">
-            <div class="pagination-holder">
-              <ul class="list-unstyled pagination text-center">
-                <li class="slick-prev slick-arrow"><a href="#" class="icon-left-arrow"></a></li>
-                <li><a href="#">01</a></li>
-                <li><a href="#">02</a></li>
-                <li class="slick-active"><a href="#">03</a></li>
-                <li class="slick-prev slick-arrow"><a href="#" class="icon-right-arrow"></a></li>
-              </ul>
-            </div>
-            <img src="images/img46.jpg" alt="image description" class="img-responsive">
-          </div> -->
+        <div class="holder grid-container" id="product-list">
+        
+         
         </div>
       </section>
     </main>
@@ -414,6 +272,142 @@
     <!-- Back Top of the page -->
     <span id="back-top" class="arrow_carrot-up"></span>
   </div>
+<!-- contant script  -->
+
+<script>
+  // Function to extract user ID from the access token
+  function getUserIdFromToken(token) {
+      const decodedToken = jwt_decode(token);
+      return decodedToken.sub; // Adjust this based on your token structure
+  }
+
+
+async function addToCart(event) {
+const productId = event.target.getAttribute('data-product-id');
+const accessToken = localStorage.getItem('access_token');
+const decodedToken = jwt_decode(accessToken);
+
+if (!accessToken) {
+    console.error('Access token is missing or invalid.');
+    return;
+}
+
+const userId = decodedToken.id; // Adjust this based on the structure of your token
+console.log('Extracted User ID:', userId);
+
+const url = `http://localhost:5000/api/carts/${userId}`; // Check the constructed URL
+console.log('Request URL:', url);
+
+const quantityInput = event.target.parentNode.querySelector('.quantity-input');
+const quantity = quantityInput.value;
+
+const requestBody = {
+    userId: userId,
+    productId: productId,
+    quantity: quantity,
+};
+
+console.log('Request Body:', requestBody);
+
+try {
+    const response = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    alert('Product added to the cart successfully!');
+} catch (error) {
+    console.error('Error adding product to the cart:', error);
+    // Handle the error, e.g., display an error message to the user.
+}
+}
+
+
+
+
+  // Attach the "addToCart" function to the document's click event
+  document.addEventListener('click', (event) => {
+      if (event.target.classList.contains('add-to-cart-button')) {
+          addToCart(event);
+      }
+  });
+
+  async function fetchAndDisplayProducts() {
+      try {
+          const response = await fetch('http://localhost:5000/api/products/all');
+          const products = await response.json();
+          const productContainer = document.getElementById('product-list');
+          const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+
+          function productMatchesCategories(product, selectedCategories) {
+              if (selectedCategories.length === 0) {
+                  return true;
+              }
+              return selectedCategories.some(category => product.categories.includes(category));
+          }
+
+          function filterProducts() {
+              const selectedCategories = Array.from(categoryCheckboxes)
+                  .filter(checkbox => checkbox.checked)
+                  .map(checkbox => checkbox.value);
+
+              productContainer.innerHTML = '';
+
+              products.forEach(product => {
+                  if (productMatchesCategories(product, selectedCategories)) {
+                      const productDiv = document.createElement('div');
+                      productDiv.className = 'product-card';
+                      productDiv.innerHTML = `
+                    
+                      <div class="product-block">
+            <div class="over ">
+              <div class="align-left">
+                <strong class="title-name"><a href="product-page.html">${product.title}</a></strong>
+                <strong class="price">₹${product.price.toFixed(2)}</strong>
+              </div>
+              <a href="#" class="like">
+                <i class="icon-favorite"></i>
+                23
+              </a>
+              <button class="add-to-cart-button" data-product-id="${product._id}">Add to Cart</button>
+                          <input type="number" class="quantity-input" value="1" min="1">
+            </div>
+            <img class="img-responsive" alt="image description" src="${product.img}">
+            
+          </div>`
+         ;
+                      productContainer.appendChild(productDiv);
+                  }
+              });
+          }
+
+          categoryCheckboxes.forEach(checkbox => {
+              checkbox.addEventListener('change', filterProducts);
+          });
+
+          filterProducts(); // Call the function to initially display products
+      } catch (error) {
+          console.error('Error fetching and displaying products:', error);
+      }
+  }
+
+  // Call the function to initially display products
+  fetchAndDisplayProducts();
+</script>
+
+
+
+
+
   <!-- include jQuery -->
   <script src="js/jquery-1.11.3.min.js"></script>
   <!-- include jQuery -->
