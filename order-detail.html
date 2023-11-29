@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Orders</title>
+    <title>Innvoice page</title>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
@@ -106,7 +106,7 @@ async function getRazorpayKeyAndCreateOrder() {
 
 // This is also an asynchronous function
 async function createOrder(key) {
-  const amount = document.getElementById("amount").value;
+  const amount = price;
 
   try {
     const response = await fetch("http://localhost:5000/api/payment/createOrder", {
