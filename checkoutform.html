@@ -31,6 +31,7 @@
     }
     body {
   overflow: auto;
+  color: #c99035;
 }
 </style>
 
@@ -226,10 +227,10 @@
             <label  class="label" for="country">Country:</label><br />
             <input class="form-control" type="text" id="country"  name="country" /><br />
       </div>
-            <h2>Cart Items</h2>
+            <h2  class="label" >Cart Items</h2>
             <div class="product-details" id="productDetails"></div>
       
-            <br />
+            <br/>
          
             <input type="submit" value="Place Order" />
         
@@ -379,13 +380,6 @@ checkoutForm.addEventListener("submit", (event) => {
   event.preventDefault(); // Prevent the default form submission
   getRazorpayKeyAndCreateOrder(totalCartPrice, event);
 });
-
-
-// const checkoutForm = document.getElementById("checkoutForm");
-// checkoutForm.addEventListener("submit", (event) => {
-// event.preventDefault(); // Prevent the default form submission
-// submitOrder(cartData, totalCartPrice, event);
-// });
 
 }
 
