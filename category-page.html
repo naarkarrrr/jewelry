@@ -19,12 +19,49 @@
   <link rel="stylesheet" href="style.css">
   <!-- include the site stylesheet -->
 
-
+  <link rel="stylesheet" href="css/dropdown.css">
   <link rel="stylesheet" href="css/color/color.css">
 
 <style>
 
-  
+
+  /* Style for the modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
 .grid-container{
  padding: 5px;
  display: grid;
@@ -120,9 +157,25 @@
               <div class="align-right">
                 <!-- social-networks of the page -->
                 <ul class="list-unstyled icon-list">
-                  <li>
-                    <a href="register.html"><img src="images/user.png" alt="images description"></a>
-                  </li>
+                  <!-- <li class="dropdown">
+                    <img class="dropdown-btn" src="images/user.png" alt="images description">
+                             <div class="dropdown-content">
+                               <a href="login.html">Login</a>
+                               <button id="logoutButton">Logout</button>
+                               <a href="#">Profile</a>
+                               <a href="register.html">Register</a>
+                             </div>
+                         </li> -->
+                         <li class="dropdown" id="userDropdown">
+                          <img class="dropdown-btn" src="images/user.png" alt="images description">
+                          <div class="dropdown-content">
+                              <a id="loginLink" href="login.html">Login</a>
+                              <button id="logoutButton">Logout</button>
+                              <a id="profileLink" href="#">Profile</a>
+                              <a id="registerLink" href="register.html">Register</a>
+                          </div>
+                      </li>
+
                   <li class="cart-box hidden-xs">
                     <a class="cart-opener opener-icons" href="#">
                       <i class="icon-cart"></i>
@@ -228,6 +281,15 @@
         
          
         </div>
+        <div id="productModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="document.getElementById('productModal').style.display='none'">&times;</span>
+
+            <!-- Product details will be dynamically inserted here -->
+          </div>
+        </div>
+        
+
       </section>
     </main>
     <!-- footer of the Page -->
@@ -326,8 +388,10 @@ try {
     const data = await response.json();
     alert('Product added to the cart successfully!');
 } catch (error) {
+
     console.error('Error adding product to the cart:', error);
     // Handle the error, e.g., display an error message to the user.
+    window.location.href = 'login.html';
 }
 }
 
@@ -371,7 +435,7 @@ try {
                       <div class="product-block">
             <div class="over ">
               <div class="align-left">
-                <strong class="title-name"><a href="product-page.html">${product.title}</a></strong>
+                <strong class="title-name">${product.title}</strong>
                 <strong class="price">₹${product.price.toFixed(2)}</strong>
               </div>
               <a href="#" class="like">
@@ -400,8 +464,203 @@ try {
       }
   }
 
+
+  function createProductDetailsModal(product) {
+  const modal = document.getElementById('productModal');
+  const modalContent = modal.querySelector('.modal-content');
+
+  // Clear previous content
+  modalContent.innerHTML = '';
+
+  // Create elements for product details
+  const productName = document.createElement('h2');
+  productName.textContent = product.title;
+
+  const productDescription = document.createElement('p');
+  productDescription.textContent = product.description;
+
+  // Create a close button
+  const closeButton = document.createElement('span');
+  closeButton.className = 'close-modal';
+  closeButton.innerHTML = '&times;';
+
+  // Add an event listener to close the modal when the close button is clicked
+  closeButton.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  // Add elements to modal content
+  modalContent.appendChild(closeButton);
+  modalContent.appendChild(productName);
+  modalContent.appendChild(productDescription);
+
+  // Show the modal
+  modal.style.display = 'block';
+}
+
+// Add event listener to product name
+document.addEventListener('click', (event) => {
+  if (event.target.classList.contains('title-name')) {
+    const productId = event.target.getAttribute('data-product-id');
+    const selectedProduct = products.find((product) => product._id === productId);
+    createProductDetailsModal(selectedProduct);
+  }
+});
+
+// Add an event listener to close the modal when clicking outside the modal content
+window.addEventListener('click', (event) => {
+  const modal = document.getElementById('productModal');
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+});
+
+
+
+
   // Call the function to initially display products
   fetchAndDisplayProducts();
+
+//logout
+
+  document.getElementById('logoutButton').addEventListener('click', async () => {
+      try {
+        // Send a request to the server to handle the logout
+        const response = await fetch('http://localhost:5000/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          // Logout successful, you might want to redirect to a login page or update the UI accordingly
+          console.log('Logout successful');
+          // Example: Redirect to the login page
+          window.location.href = 'login.html';
+        } else {
+          // Handle errors if the logout request fails
+          console.error('Logout failed');
+        }
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+    });
+
+
+
+
+    function getAccessToken() {
+      return localStorage.getItem('access_token');
+  }
+
+ // Logout button click event
+document.getElementById('logoutButton').addEventListener('click', async function () {
+    try {
+        // Get the access token from localStorage
+        const accessToken = localStorage.getItem('access_token');
+
+        if (!accessToken) {
+            console.error('Access token not found');
+            return;
+        }
+
+        // Make a POST request to your logout endpoint
+        const response = await fetch('http://localhost:5000/api/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            // Remove the access token from localStorage
+            localStorage.removeItem('access_token');
+
+            alert('Logout successful');
+            // Redirect to the login page or any other desired location
+            window.location.href = '/login.html';
+        } else {
+            const errorData = await response.json();
+            console.log('Logout failed:', errorData);
+        }
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+});
+
+//nav logic
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Check if the user is logged in
+    const accessToken = localStorage.getItem('access_token');
+    const userDropdown = document.getElementById('userDropdown');
+    const loginLink = document.getElementById('loginLink');
+    const logoutButton = document.getElementById('logoutButton');
+    const profileLink = document.getElementById('profileLink');
+    const registerLink = document.getElementById('registerLink');
+
+    if (accessToken) {
+        // User is logged in
+        loginLink.style.display = 'none';
+        registerLink.style.display = 'none';
+        logoutButton.style.display = 'inline-block';
+        profileLink.style.display = 'inline-block';
+    } else {
+        // User is not logged in
+        loginLink.style.display = 'inline-block';
+        registerLink.style.display = 'inline-block';
+        logoutButton.style.display = 'none';
+        profileLink.style.display = 'none';
+    }
+
+    // Logout button click event
+    logoutButton.addEventListener('click', async function () {
+        try {
+            // Get the access token from localStorage
+            const accessToken = localStorage.getItem('access_token');
+
+            if (!accessToken) {
+                console.error('Access token not found');
+                return;
+            }
+
+            // Make a POST request to your logout endpoint
+            const response = await fetch('http://localhost:5000/api/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                // Remove the access token from localStorage
+                localStorage.removeItem('access_token');
+
+                // Update the UI to show login and register links, hide logout and profile links
+                loginLink.style.display = 'inline-block';
+                registerLink.style.display = 'inline-block';
+                logoutButton.style.display = 'none';
+                profileLink.style.display = 'none';
+
+                alert('Logout successful');
+                // Redirect to the login page or any other desired location
+                window.location.href = '/login.html';
+            } else {
+                const errorData = await response.json();
+                console.log('Logout failed:', errorData);
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    });
+});  
+
+
+
+
 </script>
 
 

@@ -19,6 +19,8 @@
   <link rel="stylesheet" href="style.css">
   <!-- include the site stylesheet -->
   <link rel="stylesheet" href="css/color/color.css">
+  <link rel="stylesheet" href="css/dropdown.css">
+ 
 </head>
 <body>
   <!-- Page Loader -->
@@ -82,22 +84,22 @@
                       </div>
                     </div>
                   </li>
-                  <li>
-                    <a href="blog.html">blog</a>
-                    <!-- <ul class="list-unstyled drop">
-                      <li><a href="blog.html">Blog</a></li>
-                      <li><a href="blog-detail.html">Single Post</a></li>
-                    </ul> -->
-                  </li>
+        
                   <li><a href="about-us.html">about</a></li>
                   <li><a href="contact-us.html">Contact</a></li>
                 </ul>
               </nav>
               <div class="align-right">
-                <!-- social-networks of the page -->
+              
                 <ul class="list-unstyled icon-list">
-                  <li>
-                    <a href="register.html"><img src="images/user.png" alt="images description"></a>
+                  <li class="dropdown">
+             <img class="dropdown-btn" src="images/user.png" alt="images description">
+                      <div class="dropdown-content">
+                        <a href="login.html">Login</a>
+                        <button id="logoutButton">Logout</button>
+                        <a href="#">Profile</a>
+                        <a href="register.html">Register</a>
+                      </div>
                   </li>
                   <li class="cart-box hidden-xs">
                     <a class="cart-opener opener-icons" href="#">
@@ -283,6 +285,7 @@
             });
 
             if (response.ok) {
+
                 const data = await response.json();
 
                 // Store the access token in localStorage
@@ -302,6 +305,7 @@
             loader.style.display = 'none';
         }
     });
+//logout
 </script>
 
 
