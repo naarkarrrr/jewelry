@@ -25,41 +25,28 @@
 <style>
 
 
-  /* Style for the modal */
-  .modal {
-    display: none;
+  .overlay {
     position: fixed;
-    z-index: 1;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.5); /* semi-transparent black overlay */
+    display: none;
+    z-index: 999; /* Ensure the overlay is above other elements */
   }
 
-  .modal-content {
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+  .modal-container {
+    /* your existing styles for modal-container */
+    z-index: 1000; /* Ensure the modal is above the overlay */
   }
 
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+  body.modal-open {
+    overflow: hidden; /* Prevent scrolling when modal is open */
   }
 
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-  }
+
+
 
 
 .grid-container{
@@ -337,66 +324,59 @@
 <!-- contant script  -->
 
 <script>
+
+
   // Function to extract user ID from the access token
   function getUserIdFromToken(token) {
       const decodedToken = jwt_decode(token);
       return decodedToken.sub; // Adjust this based on your token structure
   }
 
+  async function addToCart(event) {
+    const productId = event.target.getAttribute('data-product-id');
+    const accessToken = localStorage.getItem('access_token');
 
-async function addToCart(event) {
-const productId = event.target.getAttribute('data-product-id');
-const accessToken = localStorage.getItem('access_token');
-const decodedToken = jwt_decode(accessToken);
-
-if (!accessToken) {
-    console.error('Access token is missing or invalid.');
-    return;
-}
-
-const userId = decodedToken.id; // Adjust this based on the structure of your token
-console.log('Extracted User ID:', userId);
-
-const url = `http://localhost:5000/api/carts/${userId}`; // Check the constructed URL
-console.log('Request URL:', url);
-
-const quantityInput = event.target.parentNode.querySelector('.quantity-input');
-const quantity = quantityInput.value;
-
-const requestBody = {
-    userId: userId,
-    productId: productId,
-    quantity: quantity,
-};
-
-console.log('Request Body:', requestBody);
-
-try {
-    const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
+    if (!accessToken) {
+        console.error('Access token is missing or invalid.');
+        return;
     }
 
-    const data = await response.json();
-    alert('Product added to the cart successfully!');
-} catch (error) {
+    const decodedToken = jwt_decode(accessToken);
+    const userId = decodedToken.id; // Adjust this based on the structure of your token
 
-    console.error('Error adding product to the cart:', error);
-    // Handle the error, e.g., display an error message to the user.
-    window.location.href = 'login.html';
-}
-}
+    const url = `http://localhost:5000/api/carts/${userId}`; // Check the constructed URL
 
+    const quantityInput = event.target.parentNode.querySelector('.quantity-input');
+    const quantity = quantityInput.value;
 
+    const requestBody = {
+        userId: userId,
+        productId: productId,
+        quantity: quantity,
+    };
 
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(requestBody),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        alert('Product added to the cart successfully!');
+    } catch (error) {
+        console.error('Error adding product to the cart:', error);
+        // Handle the error, e.g., display an error message to the user.
+        window.location.href = 'login.html';
+    }
+  }
 
   // Attach the "addToCart" function to the document's click event
   document.addEventListener('click', (event) => {
@@ -431,24 +411,22 @@ try {
                       const productDiv = document.createElement('div');
                       productDiv.className = 'product-card';
                       productDiv.innerHTML = `
-                    
-                      <div class="product-block">
-            <div class="over ">
-              <div class="align-left">
-                <strong class="title-name">${product.title}</strong>
-                <strong class="price">₹${product.price.toFixed(2)}</strong>
-              </div>
-              <a href="#" class="like">
-                <i class="icon-favorite"></i>
-                23
-              </a>
-              <button class="add-to-cart-button" data-product-id="${product._id}">Add to Cart</button>
-                          <input type="number" class="quantity-input" value="1" min="1">
-            </div>
-            <img class="img-responsive" alt="image description" src="${product.img}">
-            
-          </div>`
-         ;
+                          <div class="product-block">
+                              <div class="over ">
+                                  <div class="align-left">
+                                      <strong class="title-name" data-product-id="${product._id}" data-product-price="${product.price}" data-product-image="${product.img}">${product.title}</strong>
+                                      <strong class="price">${product.price ? `₹${product.price.toFixed(2)}` : 'Price not available'}</strong>
+                                  </div>
+                                  <a href="#" class="like">
+                                      <i class="icon-favorite"></i>
+                                      23
+                                  </a>
+                                  <button class="add-to-cart-button" data-product-id="${product._id}">Add to Cart</button>
+                                  <input type="number" class="quantity-input" value="1" min="1">
+                              </div>
+                              <img class="img-responsive" alt="image description" src="${product.img}">
+                          </div>`;
+
                       productContainer.appendChild(productDiv);
                   }
               });
@@ -464,64 +442,289 @@ try {
       }
   }
 
-
-  function createProductDetailsModal(product) {
-  const modal = document.getElementById('productModal');
-  const modalContent = modal.querySelector('.modal-content');
-
-  // Clear previous content
-  modalContent.innerHTML = '';
-
-  // Create elements for product details
-  const productName = document.createElement('h2');
-  productName.textContent = product.title;
-
-  const productDescription = document.createElement('p');
-  productDescription.textContent = product.description;
-
-  // Create a close button
-  const closeButton = document.createElement('span');
-  closeButton.className = 'close-modal';
-  closeButton.innerHTML = '&times;';
-
-  // Add an event listener to close the modal when the close button is clicked
-  closeButton.addEventListener('click', () => {
-    modal.style.display = 'none';
-  });
-
-  // Add elements to modal content
-  modalContent.appendChild(closeButton);
-  modalContent.appendChild(productName);
-  modalContent.appendChild(productDescription);
-
-  // Show the modal
-  modal.style.display = 'block';
-}
-
-// Add event listener to product name
-document.addEventListener('click', (event) => {
-  if (event.target.classList.contains('title-name')) {
-    const productId = event.target.getAttribute('data-product-id');
-    const selectedProduct = products.find((product) => product._id === productId);
-    createProductDetailsModal(selectedProduct);
-  }
-});
-
-// Add an event listener to close the modal when clicking outside the modal content
-window.addEventListener('click', (event) => {
-  const modal = document.getElementById('productModal');
-  if (event.target === modal) {
-    modal.style.display = 'none';
-  }
-});
-
-
-
-
   // Call the function to initially display products
   fetchAndDisplayProducts();
 
-//logout
+  // function displayModal(productId, productName, productPrice, productImage) {
+  //     const modalContainer = document.createElement('div');
+  //     modalContainer.className = 'modal-container';
+
+  //     const modalContent = document.createElement('div');
+  //     modalContent.className = 'modal-content';
+  //     modalContent.innerHTML = `
+  //         <h2>${productName}</h2>
+  //         <p>Product ID: ${productId}</p>
+  //         <p>Price: ${productPrice ? `₹${Number(productPrice).toFixed(2)}` : 'Price not available'}</p>
+  //         <img src="${productImage}" alt="${productName}" class="modal-image">
+  //         <button onclick="closeModal()">Close</button>
+  //     `;
+
+  //     modalContainer.appendChild(modalContent);
+  //     document.body.appendChild(modalContainer);
+  //     document.body.classList.add('modal-open');
+  // }
+
+  function displayModal(productId, productName, productPrice, productImage) {
+    const modalContainer = document.createElement('div');
+    modalContainer.className = 'modal-container';
+
+    const modalContent = document.createElement('div');
+    modalContent.className = 'modal-content';
+    modalContent.innerHTML = `
+        <h2>${productName}</h2>
+        <p>Product ID: ${productId}</p>
+        <p>Price: ${productPrice ? `₹${Number(productPrice).toFixed(2)}` : 'Price not available'}</p>
+        <img src="${productImage}" alt="${productName}" class="modal-image">
+        <button onclick="closeModal()">Close</button>
+    `;
+
+    modalContainer.appendChild(modalContent);
+    document.body.appendChild(modalContainer);
+
+    // Show overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
+    // Add class to body to disable scrolling
+    document.body.classList.add('modal-open');
+}
+  
+  document.addEventListener('click', (event) => {
+      if (event.target.classList.contains('title-name')) {
+          const productId = event.target.getAttribute('data-product-id');
+          const productName = event.target.textContent;
+          const productPrice = event.target.getAttribute('data-product-price');
+          const productImage = event.target.getAttribute('data-product-image');
+          displayModal(productId, productName, productPrice, productImage);
+      }
+  });
+
+  // function closeModal() {
+  //     const modalContainer = document.querySelector('.modal-container');
+  //     document.body.removeChild(modalContainer);
+  //     document.body.classList.remove('modal-open');
+  // }
+  function closeModal() {
+    const modalContainer = document.querySelector('.modal-container');
+    const overlay = document.querySelector('.overlay');
+
+    // Remove modal and overlay
+    document.body.removeChild(modalContainer);
+    document.body.removeChild(overlay);
+
+    // Remove class from body to enable scrolling
+    document.body.classList.remove('modal-open');
+}
+ 
+
+
+  //yaha se 
+//   // Function to extract user ID from the access token
+//   function getUserIdFromToken(token) {
+//       const decodedToken = jwt_decode(token);
+//       return decodedToken.sub; // Adjust this based on your token structure
+//   }
+
+
+// async function addToCart(event) {
+// const productId = event.target.getAttribute('data-product-id');
+// const accessToken = localStorage.getItem('access_token');
+// const decodedToken = jwt_decode(accessToken);
+
+// if (!accessToken) {
+//     console.error('Access token is missing or invalid.');
+//     return;
+// }
+
+// const userId = decodedToken.id; // Adjust this based on the structure of your token
+// console.log('Extracted User ID:', userId);
+
+// const url = `http://localhost:5000/api/carts/${userId}`; // Check the constructed URL
+// console.log('Request URL:', url);
+
+// const quantityInput = event.target.parentNode.querySelector('.quantity-input');
+// const quantity = quantityInput.value;
+
+// const requestBody = {
+//     userId: userId,
+//     productId: productId,
+//     quantity: quantity,
+// };
+
+// console.log('Request Body:', requestBody);
+
+// try {
+//     const response = await fetch(url, {
+//         method: 'PUT',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             Authorization: `Bearer ${accessToken}`,
+//         },
+//         body: JSON.stringify(requestBody),
+//     });
+
+//     if (!response.ok) {
+//         throw new Error('Network response was not ok');
+//     }
+
+//     const data = await response.json();
+//     alert('Product added to the cart successfully!');
+// } catch (error) {
+
+//     console.error('Error adding product to the cart:', error);
+//     // Handle the error, e.g., display an error message to the user.
+//     window.location.href = 'login.html';
+// }
+// }
+
+// // Attach the "addToCart" function to the document's click event
+//   document.addEventListener('click', (event) => {
+//       if (event.target.classList.contains('add-to-cart-button')) {
+//           addToCart(event);
+//       }
+//   });
+
+//   async function fetchAndDisplayProducts() {
+//       try {
+//           const response = await fetch('http://localhost:5000/api/products/all');
+//           const products = await response.json();
+//           const productContainer = document.getElementById('product-list');
+//           const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+
+//           function productMatchesCategories(product, selectedCategories) {
+//               if (selectedCategories.length === 0) {
+//                   return true;
+//               }
+//               return selectedCategories.some(category => product.categories.includes(category));
+//           }
+
+
+
+//           function filterProducts() {
+//     const selectedCategories = Array.from(categoryCheckboxes)
+//         .filter(checkbox => checkbox.checked)
+//         .map(checkbox => checkbox.value);
+
+//     productContainer.innerHTML = '';
+
+//     products.forEach(product => {
+//         if (productMatchesCategories(product, selectedCategories)) {
+//             const productDiv = document.createElement('div');
+//             productDiv.className = 'product-card';
+//             productDiv.innerHTML = `
+//                 <div class="product-block">
+//                     <div class="over ">
+//                         <div class="align-left">
+//                             <strong class="title-name" data-product-id="${product._id}">${product.title}</strong>
+//                             <strong class="price">${product.price ? `₹${product.price.toFixed(2)}` : 'Price not available'}</strong>
+//                         </div>
+//                         <a href="#" class="like">
+//                             <i class="icon-favorite"></i>
+//                             23
+//                         </a>
+//                         <button class="add-to-cart-button" data-product-id="${product._id}">Add to Cart</button>
+//                         <input type="number" class="quantity-input" value="1" min="1">
+//                     </div>
+//                     <img class="img-responsive" alt="image description" src="${product.img}">
+//                 </div>`;
+
+//             productContainer.appendChild(productDiv);
+//         }
+//     });
+// }
+
+
+          
+          
+//           categoryCheckboxes.forEach(checkbox => {
+//               checkbox.addEventListener('change', filterProducts);
+//           });
+
+//           filterProducts(); // Call the function to initially display products
+//       } catch (error) {
+//           console.error('Error fetching and displaying products:', error);
+//       }
+//   }
+
+//   // Call the function to initially display products
+//   fetchAndDisplayProducts();
+
+// //   function displayModal(productId, productName) {
+// //     // You can customize this function to display the modal as per your requirements
+// //     // For simplicity, I'm just logging the product details to the console
+
+// //     console.log(`Product ID: ${productId}`);
+// //     console.log(`Product Name: ${productName}`);
+
+// //     // Add your modal display logic here
+// //     // For example, you might show a modal overlay with more details about the product
+// // }
+
+// // document.addEventListener('click', (event) => {
+// //     // Check if the clicked element has the class 'title-name'
+// //     if (event.target.classList.contains('title-name')) {
+// //         // Retrieve the product ID and product name from the clicked element's data attributes
+// //         const productId = event.target.getAttribute('data-product-id');
+// //         const productName = event.target.textContent;
+
+// //         // Call the displayModal function with the product details
+// //         displayModal(productId, productName);
+// //     }
+// // });
+
+// function displayModal(productId, productName, productPrice, productImage) {
+//     // Create a modal container
+//     const modalContainer = document.createElement('div');
+//     modalContainer.className = 'modal-container';
+
+//     // Create modal content
+//     const modalContent = document.createElement('div');
+//     modalContent.className = 'modal-content';
+//     modalContent.innerHTML = `
+//         <h2>${productName}</h2>
+//         <p>Product ID: ${productId}</p>
+//         <p>Price: ${productPrice ? `₹${productPrice.toFixed(2)}` : 'Price not available'}</p>
+//         <img src="${productImage}" alt="${productName}" class="modal-image">
+//         <button onclick="closeModal()">Close</button>
+//     `;
+
+//     // Append modal content to modal container
+//     modalContainer.appendChild(modalContent);
+
+//     // Append modal container to the body
+//     document.body.appendChild(modalContainer);
+
+//     // Add a class to the body to prevent scrolling when the modal is open
+//     document.body.classList.add('modal-open');
+// }
+
+// document.addEventListener('click', (event) => {
+//     // Check if the clicked element has the class 'title-name'
+//     if (event.target.classList.contains('title-name')) {
+//         // Retrieve the product details from the clicked element's data attributes
+//         const productId = event.target.getAttribute('data-product-id');
+//         const productName = event.target.textContent;
+//         const productPrice = event.target.getAttribute('data-product-price');
+//         const productImage = event.target.getAttribute('data-product-image');
+
+//         // Call the displayModal function with the product details
+//         displayModal(productId, productName, productPrice, productImage);
+//     }
+// });
+
+// // Function to close the modal
+// function closeModal() {
+//     const modalContainer = document.querySelector('.modal-container');
+//     // Remove the modal container
+//     document.body.removeChild(modalContainer);
+
+//     // Remove the class that prevents scrolling
+//     document.body.classList.remove('modal-open');
+// }
+
+// yaha tak 
+//logout 2 hai log out 
 
   document.getElementById('logoutButton').addEventListener('click', async () => {
       try {
@@ -546,8 +749,6 @@ window.addEventListener('click', (event) => {
         console.error('Error during logout:', error);
       }
     });
-
-
 
 
     function getAccessToken() {

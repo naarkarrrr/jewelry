@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- endinject -->
 
-
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </head>
 <body>
   <!-- Page Loader -->
@@ -216,11 +216,11 @@
                                   <a class="nav-link" id="account-address-tab" data-toggle="tab" href="#account-address"
                                       role="tab" aria-controls="account-address" aria-selected="false">Address</a>
                               </li>
-                              <li class="nav-item">
+                              <!-- <li class="nav-item">
                                   <a class="nav-link" id="account-acdetails-tab" data-toggle="tab"
                                       href="#account-acdetails" role="tab" aria-controls="account-acdetails"
                                       aria-selected="false">Account Details</a>
-                              </li>
+                              </li> -->
                               <li class="nav-item">
                                   <a class="nav-link" id="account-logout-tab" href="login-register.html" role="tab"
                                       aria-controls="account-address" aria-selected="false">Logout</a>
@@ -231,18 +231,29 @@
                               <div class="tab-pane fade show active" id="account-dashboard" role="tabpanel"
                                   aria-labelledby="account-dashboard-tab">
                                   <div class="tm-myaccount-dashboard">
-                                      <p>Hello <b>William Bean</b> (not <b>William Bean</b>? <a
+                                      <!-- <p>Hello <b>William Bean</b> (not <b>William Bean</b>? <a
                                               href="login-register.html">Log
                                               out</a>)</p>
                                       <p>From your account dashboard you can view your recent orders, manage your
-                                          shipping and billing addresses, and edit your password and account details.</p>
+                                          shipping and billing addresses, and edit your password and account details.</p> -->
+
+                                          <div id="user-info">
+                                            <p>Hello <b><span id="user-name"></span></b></p>
+
+                                            <div style="height: 150px; width: 150px;" id="profile-picture">
+                                              <img id="user-avatar" src="" alt="Profile Picture">
+                                          </div>
+                                         <span id="user-name"></span>
+                                            <p>Email-: <span id="user-email"></span></p>
+                                           
+                                        </div>
                                   </div>
                               </div>
                               <div class="tab-pane fade" id="account-orders" role="tabpanel"
                                   aria-labelledby="account-orders-tab">
                                   <div class="tm-myaccount-orders">
-                                      <div class="table-responsive">
-                                          <table class="table table-bordered mb-0">
+                                      <div class="table-responsive" id="account-orders-details">
+                                          <!-- <table class="table table-bordered mb-0" >
                                               <thead>
                                                   <tr>
                                                       <th class="tm-myaccount-orders-col-id">ORDER ID</th>
@@ -252,7 +263,7 @@
                                                       <th class="tm-myaccount-orders-col-view">VIEW</th>
                                                   </tr>
                                               </thead>
-                                              <tbody>
+                                              <tbody >
                                                   <tr>
                                                       <td>#12345</td>
                                                       <td>30 December 2018</td>
@@ -261,54 +272,24 @@
                                                       <td><a href="#" class="tm-button tm-button-small">View</a>
                                                       </td>
                                                   </tr>
-                                                  <tr>
-                                                      <td>#12346</td>
-                                                      <td>30 December 2018</td>
-                                                      <td>On Hold</td>
-                                                      <td>$220.00 for 3 items</td>
-                                                      <td><a href="#" class="tm-button tm-button-small">View</a>
-                                                      </td>
-                                                  </tr>
                                               </tbody>
-                                          </table>
+                                          </table> -->
                                       </div>
                                   </div>
                               </div>
                               <div class="tab-pane fade" id="account-address" role="tabpanel"
                                   aria-labelledby="account-address-tab">
                                   <div class="tm-myaccount-address">
-                                      <p><b>The following addresses will be used on the checkout page by default.</b></p>
+                                      <p><b>your currunt Shipping Adress.</b></p>
                                       <div class="row">
-                                          <div class="col-lg-6 col-md-6">
-                                              <div class="tm-myaccount-address-billing">
-                                                  <a href="#" class="edit-button">Edit</a>
-                                                  <h3>Billing Address</h3>
-                                                  <address>
-                                                      Jonathon Doe<br>
-                                                      Example company<br>
-                                                      516 Wintheiser Circles <br>
-                                                      Lake Jordanmouth <br>
-                                                      Jordan
-                                                  </address>
-                                              </div>
+                                          <div class="col-lg-6 col-md-6" id="additional-order-details">
+                                             
                                           </div>
-                                          <div class="col-lg-6 col-md-6 mt-30 mt-md-0">
-                                              <div class="tm-myaccount-address-shipping">
-                                                  <a href="#" class="edit-button">Edit</a>
-                                                  <h3>Shipping Address</h3>
-                                                  <address>
-                                                      Jonathon Doe<br>
-                                                      Example company<br>
-                                                      516 Wintheiser Circles <br>
-                                                      Lake Jordanmouth <br>
-                                                      Jordan
-                                                  </address>
-                                              </div>
-                                          </div>
+                                         
                                       </div>
                                   </div>
                               </div>
-                              <div class="tab-pane fade" id="account-acdetails" role="tabpanel"
+                              <!-- <div class="tab-pane fade" id="account-acdetails" role="tabpanel"
                                   aria-labelledby="account-acdetails-tab">
                                   <div class="tm-myaccount-acdetails">
                                       <form action="#" class="tm-form tm-form-bordered">
@@ -354,7 +335,7 @@
                                           </div>
                                       </form>
                                   </div>
-                              </div>
+                              </div> -->
                           </div>
                       </div>
                   </div>
@@ -404,6 +385,201 @@
     <!-- Back Top of the page -->
     <span id="back-top" class="arrow_carrot-up"></span>
   </div>
+  <script>
+    // Function to fetch and display user profile
+    async function fetchUserProfile() {
+        const accessToken = localStorage.getItem('access_token');
+
+        // Replace 'http://localhost:5000' with the URL of your user profile endpoint
+        const profileUrl = 'http://localhost:5000/api/users/profile';
+
+        try {
+            const response = await fetch(profileUrl, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const userData = await response.json();
+            displayUserProfile(userData);
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    }
+
+    function displayUserProfile(userData) {
+        const userName = document.getElementById('user-name');
+        const userEmail = document.getElementById('user-email');
+        const userAvatar = document.getElementById('user-avatar');
+
+        userName.textContent = userData.username;
+        userEmail.textContent = userData.email;
+        userAvatar.src = userData.avatar;
+    }
+
+    // Call the function to fetch and display the user profile
+    fetchUserProfile();
+//fetch users orders
+
+function handleFetchError(type, error) {
+        console.error(`Error fetching ${type}:`, error);
+        // Handle the error as needed, e.g., display an error message to the user.
+      }
+
+      async function fetchUserOrders() {
+        try {
+          const accessToken = localStorage.getItem("access_token");
+
+          if (!accessToken) {
+            throw new Error("Access token not found.");
+          }
+
+          const userId = jwt_decode(accessToken).id;
+          const ordersUrl = `http://localhost:5000/api/orders/find/${userId}`;
+          const response = await fetch(ordersUrl, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Network response was not OK");
+          }
+
+          const orderData = await response.json();
+          displayUserOrders(orderData);
+        } catch (error) {
+          handleFetchError("user orders", error);
+        }
+      }
+
+
+
+//             function displayUserOrders(orderData) {
+//   const orderDetailsContainer = document.getElementById("account-orders-details");
+//   const additionalOrderDetailsContainer = document.getElementById("additional-order-details");
+
+//   orderDetailsContainer.innerHTML = "";
+//   additionalOrderDetailsContainer.innerHTML = ""; // Clear previous content
+
+//   for (const order of orderData) {
+//     const orderElement = document.createElement("div");
+
+//     orderElement.innerHTML = `
+// <table class="table table-bordered mb-0" >
+//                                               <thead>
+//                                                   <tr>
+//                                                       <th class="tm-myaccount-orders-col-id">ORDER ID</th>
+//                                                       <th class="tm-myaccount-orders-col-date">DATE AND TIME</th>
+//                                                        <th class="tm-myaccount-orders-col-status">STATUS</th>
+//                                                        <th class="tm-myaccount-orders-col-total">TOTAL</th>
+//                                                        <th class="tm-myaccount-orders-col-view">VIEW</th>
+//                                                    </tr>
+//                                                </thead>
+//                                                <tbody >
+//                                                    <tr>
+//                                                        <td>${order._id}</td>
+//                                                        <td>${new Date(order.createdAt).toLocaleString()}</td>
+//                                                        <td>On Hold</td>
+//                                                        <td>${order.amount.toFixed(2)}</td>
+//                                                     <td><a href="#" class="tm-button tm-button-small">View</a>
+//                                                        </td>
+//                                                    </tr>
+//                                                </tbody>
+//                                            </table>
+//     `;
+
+//     orderDetailsContainer.appendChild(orderElement);
+
+   
+
+//     // Create content for the additional order details
+//     const additionalOrderElement = document.createElement("div");
+//     additionalOrderElement.innerHTML = `
+//     <div class="tm-myaccount-address-billing">
+//                                                   <a href="#" class="edit-button">Edit</a>
+//                                                   <h3>Shipping Address</h3>
+//                                                   <address>
+//                                                     ${order.address.city}
+//                                                   </address>
+//                                               </div>
+//     `;
+// console.log(order.address);
+//     additionalOrderDetailsContainer.appendChild(additionalOrderElement);
+//   }
+// }
+
+
+function displayUserOrders(orderData) {
+  const orderDetailsContainer = document.getElementById("account-orders-details");
+  const additionalOrderDetailsContainer = document.getElementById("additional-order-details");
+
+  orderDetailsContainer.innerHTML = "";
+  additionalOrderDetailsContainer.innerHTML = ""; // Clear previous content
+
+  // Display all orders
+  for (const order of orderData) {
+    // Create content for the order details
+    const orderElement = document.createElement("div");
+
+    orderElement.innerHTML = `
+      <table class="table table-bordered mb-0">
+        <thead>
+          <tr>
+            <th class="tm-myaccount-orders-col-id">ORDER ID</th>
+            <th class="tm-myaccount-orders-col-date">DATE AND TIME</th>
+            <th class="tm-myaccount-orders-col-status">STATUS</th>
+            <th class="tm-myaccount-orders-col-total">TOTAL</th>
+            <th class="tm-myaccount-orders-col-view">VIEW</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${order._id}</td>
+            <td>${new Date(order.createdAt).toLocaleString()}</td>
+            <td>On Hold</td>
+            <td>${order.amount.toFixed(2)}</td>
+            <td><a href="#" class="tm-button tm-button-small">View</a></td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+
+    orderDetailsContainer.appendChild(orderElement);
+
+    // Create content for the additional order details (show only for the first order)
+    if (order === orderData[0]) {
+      const additionalOrderElement = document.createElement("div");
+      additionalOrderElement.innerHTML = `
+        <div class="tm-myaccount-address-billing">
+         
+          <h3>Shipping Address</h3>
+          <address>
+            ${order.address && order.address.city ? order.address.city : ''}
+            District: ${order.address && order.address.district ? order.address.district : ''}
+         state: ${order.address && order.address.state ? order.address.state : ''}
+          </address>
+        </div>
+      `;
+// edit button (befor   <h3>Shipping Address</h3>) incase of use  <a href="#" class="edit-button">Edit</a>
+      additionalOrderDetailsContainer.appendChild(additionalOrderElement);
+    }
+  }
+}
+
+      
+      fetchUserOrders();
+
+
+   
+</script>
+
+
+
   <!-- include jQuery -->
   <script src="js/jquery-1.11.3.min.js"></script>
   <!-- include jQuery -->
